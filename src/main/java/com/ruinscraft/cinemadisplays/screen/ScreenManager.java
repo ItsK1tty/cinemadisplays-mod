@@ -1,5 +1,7 @@
 package com.ruinscraft.cinemadisplays.screen;
 
+import net.minecraft.util.math.BlockPos;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,15 @@ public class ScreenManager {
 
     public boolean hasActive() {
         return active != null;
+    }
+
+    public Screen getScreen(BlockPos blockPos) {
+        for (Screen screen : screens) {
+            if (screen.getBlockPos().equals(blockPos)) {
+                return screen;
+            }
+        }
+        return null;
     }
 
 }

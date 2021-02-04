@@ -26,82 +26,91 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
 
     @Override
     public void render(ScreenBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (!CefUtil.hasActiveBrowser()) {
-            return;
-        }
-
         ScreenManager screenManager = CinemaDisplaysMod.getInstance().getScreenManager();
+        Screen screen = screenManager.getScreen(entity.getPos());
 
-        if (!screenManager.hasActive()) {
-            return;
-        }
-
-        Screen active = screenManager.getActive();
-
-        if (!entity.getPos().equals(active.getBlockPos())) {
+        if (screen == null) {
             return;
         }
 
         matrices.push();
-
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
         glEnable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
-
         RenderSystem.enableDepthTest();
-
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        final Quaternion rotation;
-
-        switch (active.getFacing()) {
-            case "NORTH":
-                rotation = new Quaternion(0, 180, 0, true);
-                matrices.translate(0, 0, 1);
-                break;
-            case "WEST":
-                rotation = new Quaternion(0, -90, 0, true);
-                matrices.translate(0, 0, 0);
-                break;
-            case "EAST":
-                rotation = new Quaternion(0, 90, 0, true);
-                matrices.translate(-1, 0, 1);
-                break;
-            default:
-                rotation = new Quaternion(0, 0, 0, true);
-                matrices.translate(-1, 0, 0);
-                break;
-        }
-
         matrices.translate(1 - 0.05, 1, 0);
-        matrices.multiply(rotation);
-        matrices.scale(active.getWidth(), active.getHeight(), 0);
+        fixRotation(matrices, screen.getFacing());
+        matrices.scale(screen.getWidth(), screen.getHeight(), 0);
 
-        final int texId = CefUtil.getActiveBrowser().renderer_.texture_id_[0];
-        RenderSystem.bindTexture(texId);
-
-        Matrix4f matrix4f = matrices.peek().getModel();
-        buffer.begin(GL_QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-        buffer.vertex(matrix4f, 0.0F, -1.0F, 0.0F).color(255, 255, 255, 255).texture(0.0f, 1.0f).next();
-        buffer.vertex(matrix4f, 1.0F, -1.0F, 0.0F).color(255, 255, 255, 255).texture(1.0f, 1.0f).next();
-        buffer.vertex(matrix4f, 1.0F, 0.0F, 0.0F).color(255, 255, 255, 255).texture(1.0f, 0.0f).next();
-        buffer.vertex(matrix4f, 0.0F, 0.0F, 0.0F).color(255, 255, 255, 255).texture(0.0f, 0.0f).next();
-
-        tessellator.draw();
-        RenderSystem.bindTexture(0);
+        // If this is the active screen, render the browser texture if available
+        if (screenManager.hasActive()
+                && screenManager.getActive().getBlockPos().equals(entity.getPos())
+                && CefUtil.hasActiveBrowser()) {
+            renderBrowserTex(matrices, tessellator, buffer);
+        } else {
+            renderBlack(matrices, tessellator, buffer);
+        }
 
         glEnable(GL_LIGHTING);
         glEnable(GL_CULL_FACE);
-
         RenderSystem.disableDepthTest();
-
         matrices.pop();
     }
 
     @Override
     public boolean rendersOutsideBoundingBox(ScreenBlockEntity blockEntity) {
         return true;
+    }
+
+    private void renderBrowserTex(MatrixStack matrixStack, Tessellator tessellator, BufferBuilder buffer) {
+        final int texId = CefUtil.getActiveBrowser().renderer_.texture_id_[0];
+        RenderSystem.bindTexture(texId);
+        Matrix4f matrix4f = matrixStack.peek().getModel();
+        buffer.begin(GL_QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        buffer.vertex(matrix4f, 0.0F, -1.0F, 1.0F).color(255, 255, 255, 255).texture(0.0f, 1.0f).next();
+        buffer.vertex(matrix4f, 1.0F, -1.0F, 1.0F).color(255, 255, 255, 255).texture(1.0f, 1.0f).next();
+        buffer.vertex(matrix4f, 1.0F, 0.0F, 0.0F).color(255, 255, 255, 255).texture(1.0f, 0.0f).next();
+        buffer.vertex(matrix4f, 0, 0, 0).color(255, 255, 255, 255).texture(0.0f, 0.0f).next();
+        tessellator.draw();
+        RenderSystem.bindTexture(0);
+    }
+
+    private void renderBlack(MatrixStack matrixStack, Tessellator tessellator, BufferBuilder buffer) {
+        Matrix4f matrix4f = matrixStack.peek().getModel();
+        buffer.begin(GL_QUADS, VertexFormats.POSITION_COLOR);
+        buffer.vertex(matrix4f, 0.0F, -1.0F, 1.0F).color(255, 255, 255, 255).next();
+        buffer.vertex(matrix4f, 1.0F, -1.0F, 1.0F).color(255, 255, 255, 255).next();
+        buffer.vertex(matrix4f, 1.0F, 0.0F, 0.0F).color(255, 255, 255, 255).next();
+        buffer.vertex(matrix4f, 0, 0, 0).color(255, 255, 255, 255).next();
+        tessellator.draw();
+    }
+
+    private void fixRotation(MatrixStack matrixStack, String facing) {
+        final Quaternion rotation;
+
+        switch (facing) {
+            case "NORTH":
+                rotation = new Quaternion(0, 180, 0, true);
+                matrixStack.translate(0, 0, 1);
+                break;
+            case "WEST":
+                rotation = new Quaternion(0, -90, 0, true);
+                matrixStack.translate(0, 0, 0);
+                break;
+            case "EAST":
+                rotation = new Quaternion(0, 90, 0, true);
+                matrixStack.translate(-1, 0, 1);
+                break;
+            default:
+                rotation = new Quaternion(0, 0, 0, true);
+                matrixStack.translate(-1, 0, 0);
+                break;
+        }
+
+        matrixStack.multiply(rotation);
     }
 
     public static void register() {
