@@ -96,6 +96,11 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         matrices.pop();
     }
 
+    @Override
+    public boolean rendersOutsideBoundingBox(ScreenBlockEntity blockEntity) {
+        return true;
+    }
+
     public static void register() {
         BlockEntityRendererRegistry.INSTANCE
                 .register(ScreenBlockEntity.SCREEN_BLOCK_ENTITY, ScreenBlockEntityRenderer::new);
