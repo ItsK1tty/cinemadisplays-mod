@@ -14,7 +14,7 @@ public class ScreenBlock extends Block implements BlockEntityProvider {
     public static ScreenBlock SCREEN_BLOCK;
 
     public ScreenBlock() {
-        super(FabricBlockSettings.of(Material.METAL).strength(-1.0f, 3600000.0F).dropsNothing());
+        super(FabricBlockSettings.of(Material.METAL).strength(-1.0f, 3600000.0F).dropsNothing().nonOpaque());
     }
 
     @Nullable
