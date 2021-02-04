@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.video.FileVideo;
+import com.ruinscraft.cinemadisplays.video.TwitchVideo;
 import com.ruinscraft.cinemadisplays.video.Video;
 import com.ruinscraft.cinemadisplays.video.YouTubeVideo;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -133,6 +134,9 @@ public final class NetworkUtil {
                 String url = videoJson.get("url").getAsString();
                 boolean loop = videoJson.get("loop").getAsBoolean();
                 return new FileVideo(title, durationSeconds, startedAt, url, loop);
+            case "twitch":
+                String twitchUser = videoJson.get("twitch_user").getAsString();
+                return new TwitchVideo(title, durationSeconds, startedAt, twitchUser);
             default:
                 return null;
         }

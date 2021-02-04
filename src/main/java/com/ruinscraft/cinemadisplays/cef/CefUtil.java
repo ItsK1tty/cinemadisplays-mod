@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.video.FileVideo;
+import com.ruinscraft.cinemadisplays.video.TwitchVideo;
 import com.ruinscraft.cinemadisplays.video.Video;
 import com.ruinscraft.cinemadisplays.video.YouTubeVideo;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -118,6 +119,8 @@ public final class CefUtil {
             } else {
                 createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/file.html");
             }
+        } else if (video instanceof TwitchVideo) {
+            createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/twitch.html");
         }
     }
 

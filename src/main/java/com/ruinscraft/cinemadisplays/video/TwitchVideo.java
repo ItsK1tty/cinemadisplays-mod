@@ -1,0 +1,25 @@
+package com.ruinscraft.cinemadisplays.video;
+
+import org.cef.browser.CefFrame;
+
+public class TwitchVideo extends Video {
+
+    private String twitchUser;
+
+    public TwitchVideo(String title, long durationSeconds, long startedAt, String twitchUser) {
+        super(title, durationSeconds, startedAt);
+        this.twitchUser = twitchUser;
+    }
+
+    public String getTwitchUser() {
+        return twitchUser;
+    }
+
+    @Override
+    public void start(CefFrame frame) {
+        String js = "th_video('%s');";
+        js = String.format(js, getTwitchUser());
+        frame.executeJavaScript(js, frame.getURL(), 0);
+    }
+
+}
