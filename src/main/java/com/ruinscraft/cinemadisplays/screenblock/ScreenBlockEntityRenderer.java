@@ -58,20 +58,23 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         switch (active.getFacing()) {
             case "NORTH":
                 rotation = new Quaternion(0, 180, 0, true);
+                matrices.translate(0, 0, 1);
                 break;
             case "WEST":
                 rotation = new Quaternion(0, -90, 0, true);
-                matrices.translate(-1, 0, 0);
+                matrices.translate(0, 0, 0);
                 break;
             case "EAST":
                 rotation = new Quaternion(0, 90, 0, true);
+                matrices.translate(-1, 0, 1);
                 break;
             default:
                 rotation = new Quaternion(0, 0, 0, true);
+                matrices.translate(-1, 0, 0);
                 break;
         }
 
-        matrices.translate(1, 1, 0);
+        matrices.translate(1 - 0.05, 1, 0);
         matrices.multiply(rotation);
         matrices.scale(active.getWidth(), active.getHeight(), 0);
 
