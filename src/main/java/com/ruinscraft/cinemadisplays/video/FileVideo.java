@@ -11,7 +11,7 @@ public class FileVideo extends Video {
     private boolean loop;
 
     public FileVideo(String title, long durationSeconds, long startedAt, String url, boolean loop) {
-        super("file", title, durationSeconds, startedAt);
+        super(title, durationSeconds, startedAt);
         this.url = url;
         this.loop = loop;
     }

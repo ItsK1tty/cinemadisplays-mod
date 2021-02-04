@@ -5,6 +5,7 @@ import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.video.FileVideo;
 import com.ruinscraft.cinemadisplays.video.Video;
+import com.ruinscraft.cinemadisplays.video.YouTubeVideo;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.options.KeyBinding;
@@ -107,20 +108,16 @@ public final class CefUtil {
     }
 
     public static void playVideo(Video video) {
-        switch (video.getService()) {
-            case "youtube":
-                createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/youtube.html");
-                break;
-            case "file":
-                FileVideo fileVideo = (FileVideo) video;
-                if (fileVideo.isLoop()) {
-                    createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/fileloop.html");
-                } else {
-                    createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/file.html");
-                }
-                break;
-            default:
-                break;
+        if (video instanceof YouTubeVideo) {
+            createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/youtube.html");
+        } else if (video instanceof FileVideo) {
+            FileVideo fileVideo = (FileVideo) video;
+
+            if (fileVideo.isLoop()) {
+                createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/fileloop.html");
+            } else {
+                createBrowser("https://cdn.ruinscraft.com/cinema/service/v1/file.html");
+            }
         }
     }
 

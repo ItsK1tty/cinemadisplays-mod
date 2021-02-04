@@ -7,7 +7,7 @@ public class YouTubeVideo extends Video {
     private String videoId;
 
     public YouTubeVideo(String title, long durationSeconds, long startedAt, String videoId) {
-        super("youtube", title, durationSeconds, startedAt);
+        super(title, durationSeconds, startedAt);
         this.videoId = videoId;
     }
 

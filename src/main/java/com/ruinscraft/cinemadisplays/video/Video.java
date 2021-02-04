@@ -4,20 +4,14 @@ import org.cef.browser.CefFrame;
 
 public abstract class Video {
 
-    private String service;
     private String title;
     private long durationSeconds;
     private long startedAt;
 
-    public Video(String service, String title, long durationSeconds, long startedAt) {
-        this.service = service;
+    public Video(String title, long durationSeconds, long startedAt) {
         this.title = title;
         this.durationSeconds = durationSeconds;
         this.startedAt = startedAt;
-    }
-
-    public String getService() {
-        return service;
     }
 
     public String getTitle() {
