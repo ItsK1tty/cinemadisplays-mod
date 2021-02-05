@@ -12,12 +12,10 @@ public class LoadHandler implements CefLoadHandler {
 
     @Override
     public void onLoadingStateChange(CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
-
     }
 
     @Override
     public void onLoadStart(CefBrowser browser, CefFrame frame, CefRequest.TransitionType transitionType) {
-        
     }
 
     @Override
@@ -31,7 +29,7 @@ public class LoadHandler implements CefLoadHandler {
 
     @Override
     public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode, String errorText, String failedUrl) {
-        System.out.println("Load error " + errorText);
+        System.out.println("Load error: " + errorText);
     }
 
 }

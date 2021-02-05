@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
+import com.ruinscraft.cinemadisplays.screen.PreviewScreen;
+import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.video.FileVideo;
 import com.ruinscraft.cinemadisplays.video.TwitchVideo;
@@ -25,12 +27,14 @@ public final class NetworkUtil {
     private static final Identifier CHANNEL_SCREENS;
     private static final Identifier CHANNEL_LOAD_SCREEN;
     private static final Identifier CHANNEL_UNLOAD_SCREEN;
+    private static final Identifier CHANNEL_UPDATE_PREVIEW_SCREEN;
 
     static {
         JSON_PARSER = new JsonParser();
         CHANNEL_SCREENS = new Identifier("cinemadisplays", "screens");
         CHANNEL_LOAD_SCREEN = new Identifier("cinemadisplays", "load_screen");
         CHANNEL_UNLOAD_SCREEN = new Identifier("cinemadisplays", "unload_screen");
+        CHANNEL_UPDATE_PREVIEW_SCREEN = new Identifier("cinemadisplays", "update_preview_screen");
     }
 
     private static String readString(PacketByteBuf buf) {
@@ -106,6 +110,42 @@ public final class NetworkUtil {
                 }
             });
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(CHANNEL_UPDATE_PREVIEW_SCREEN, (client, handler, buf, responseSender) -> {
+            String previewScreenJsonRaw = readString(buf);
+
+            client.submit(() -> {
+                try {
+                    JsonObject previewScreenJson = JSON_PARSER.parse(previewScreenJsonRaw).getAsJsonObject();
+                    PreviewScreen previewScreen = deserializePreviewScreen(previewScreenJson);
+                    PreviewScreenManager previewScreenManager = CinemaDisplaysMod.getInstance().getPreviewScreenManager();
+                    if (previewScreenManager.getPreviewScreen(previewScreen.getBlockPos()) != null) {
+                        previewScreenManager.getPreviewScreen(previewScreen.getBlockPos()).setVideo(previewScreen.getVideo());
+                    } else {
+                        previewScreenManager.addPreviewScreen(previewScreen);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
+
+    private static PreviewScreen deserializePreviewScreen(JsonObject previewScreenJson) {
+        UUID parentScreenId = UUID.fromString(previewScreenJson.get("parent_screen_id").getAsString());
+        String world = previewScreenJson.get("world").getAsString();
+        int x = previewScreenJson.get("x").getAsInt();
+        int y = previewScreenJson.get("y").getAsInt();
+        int z = previewScreenJson.get("z").getAsInt();
+        String facing = previewScreenJson.get("facing").getAsString();
+        PreviewScreen previewScreen = new PreviewScreen(parentScreenId, world, x, y, z, facing);
+        if (previewScreenJson.has("video")) {
+            Video video = deserializeVideo(previewScreenJson.getAsJsonObject("video"));
+            previewScreen.setVideo(video);
+        } else {
+            previewScreen.setVideo(null);
+        }
+        return previewScreen;
     }
 
     private static Screen deserializeScreen(JsonObject screenJson) {
@@ -117,26 +157,37 @@ public final class NetworkUtil {
         int width = screenJson.get("width").getAsInt();
         int height = screenJson.get("height").getAsInt();
         UUID id = UUID.fromString(screenJson.get("id").getAsString());
-        return new Screen(world, x, y, z, facing, width, height, id);
+        Screen screen = new Screen(world, x, y, z, facing, width, height, id);
+        if (screenJson.has("preview_screens")) {
+            JsonArray previewScreensJson = screenJson.getAsJsonArray("preview_screens");
+            for (JsonElement jsonElement : previewScreensJson) {
+                PreviewScreen previewScreen = deserializePreviewScreen(jsonElement.getAsJsonObject());
+                screen.addPreviewScreen(previewScreen);
+            }
+        }
+        return screen;
     }
 
     private static Video deserializeVideo(JsonObject videoJson) {
         String service = videoJson.get("service").getAsString();
         String title = videoJson.get("title").getAsString();
+        String thumbnailUrl = videoJson.get("thumbnail_url").getAsString();
+        String previewScreenTextureUrl = videoJson.get("preview_screen_texture_url").getAsString();
         long durationSeconds = videoJson.get("duration_seconds").getAsLong();
         long startedAt = videoJson.get("started_at").getAsLong();
 
         switch (service) {
             case "youtube":
                 String videoId = videoJson.get("video_id").getAsString();
-                return new YouTubeVideo(title, durationSeconds, startedAt, videoId);
+                String channelName = videoJson.get("channel_name").getAsString();
+                return new YouTubeVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, videoId, channelName);
             case "file":
                 String url = videoJson.get("url").getAsString();
                 boolean loop = videoJson.get("loop").getAsBoolean();
-                return new FileVideo(title, durationSeconds, startedAt, url, loop);
+                return new FileVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, url, loop);
             case "twitch":
                 String twitchUser = videoJson.get("twitch_user").getAsString();
-                return new TwitchVideo(title, durationSeconds, startedAt, twitchUser);
+                return new TwitchVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, twitchUser);
             default:
                 return null;
         }

@@ -1,6 +1,6 @@
 package com.ruinscraft.cinemadisplays.screen;
 
-import com.ruinscraft.cinemadisplays.screenblock.ScreenBlock;
+import com.ruinscraft.cinemadisplays.block.ScreenBlock;
 import com.ruinscraft.cinemadisplays.video.Video;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.block.Blocks;
@@ -8,6 +8,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Screen {
@@ -20,6 +22,7 @@ public class Screen {
     private int width;
     private int height;
     private UUID id;
+    private List<PreviewScreen> previewScreens;
 
     private transient Video video;
     private transient BlockPos blockPos; // used as a cache for performance
@@ -34,7 +37,7 @@ public class Screen {
         this.width = width;
         this.height = height;
         this.id = id;
-
+        previewScreens = new ArrayList<>();
         blockPos = new BlockPos(new Vec3d(x, y, z));
     }
 
@@ -70,6 +73,14 @@ public class Screen {
         return id;
     }
 
+    public List<PreviewScreen> getPreviewScreens() {
+        return previewScreens;
+    }
+
+    public void addPreviewScreen(PreviewScreen previewScreen) {
+        previewScreens.add(previewScreen);
+    }
+
     public Video getVideo() {
         return video;
     }
@@ -82,13 +93,9 @@ public class Screen {
         return blockPos;
     }
 
-    private int getChunkCoordinate(int blockCoordinate) {
-        return blockCoordinate >> 4;
-    }
-
     public void register() {
-        int chunkX = getChunkCoordinate(x);
-        int chunkZ = getChunkCoordinate(z);
+        int chunkX = x >> 4;
+        int chunkZ = z >> 4;
 
         if (MinecraftClient.getInstance().world.isChunkLoaded(chunkX, chunkZ)) {
             MinecraftClient.getInstance().world.setBlockState(getBlockPos(), ScreenBlock.SCREEN_BLOCK.getDefaultState());

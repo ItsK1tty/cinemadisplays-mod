@@ -1,4 +1,4 @@
-package com.ruinscraft.cinemadisplays.screenblock;
+package com.ruinscraft.cinemadisplays.block;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;

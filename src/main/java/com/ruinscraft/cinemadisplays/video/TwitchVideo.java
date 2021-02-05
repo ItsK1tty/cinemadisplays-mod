@@ -6,8 +6,8 @@ public class TwitchVideo extends Video {
 
     private String twitchUser;
 
-    public TwitchVideo(String title, long durationSeconds, long startedAt, String twitchUser) {
-        super(title, durationSeconds, startedAt);
+    public TwitchVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String twitchUser) {
+        super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);
         this.twitchUser = twitchUser;
     }
 

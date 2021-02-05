@@ -5,14 +5,28 @@ import org.cef.browser.CefFrame;
 public class YouTubeVideo extends Video {
 
     private String videoId;
+    private String channelName;
 
-    public YouTubeVideo(String title, long durationSeconds, long startedAt, String videoId) {
-        super(title, durationSeconds, startedAt);
+    public YouTubeVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String videoId, String channelName) {
+        super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);
         this.videoId = videoId;
+        this.channelName = channelName;
     }
 
     public String getVideoId() {
         return videoId;
+    }
+
+    public String getChannelName() {
+        return channelName;
+    }
+
+    public String getChannelNameShort() {
+        if (channelName.length() > 25) {
+            return channelName.substring(0, 22) + "...";
+        } else {
+            return channelName;
+        }
     }
 
     @Override

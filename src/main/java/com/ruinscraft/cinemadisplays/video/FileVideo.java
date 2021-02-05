@@ -10,8 +10,8 @@ public class FileVideo extends Video {
     private String url;
     private boolean loop;
 
-    public FileVideo(String title, long durationSeconds, long startedAt, String url, boolean loop) {
-        super(title, durationSeconds, startedAt);
+    public FileVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String url, boolean loop) {
+        super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);
         this.url = url;
         this.loop = loop;
     }

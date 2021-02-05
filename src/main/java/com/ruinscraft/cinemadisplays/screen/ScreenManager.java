@@ -29,8 +29,6 @@ public class ScreenManager {
             screen.register();
         }
 
-        System.out.println("Loaded " + screens.size() + " screens");
-
         this.screens = screens;
     }
 
