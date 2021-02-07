@@ -139,8 +139,9 @@ public final class NetworkUtil {
         int width = screenJson.get("width").getAsInt();
         int height = screenJson.get("height").getAsInt();
         boolean visible = screenJson.get("visible").getAsBoolean();
+        boolean muted = screenJson.get("muted").getAsBoolean();
         UUID id = UUID.fromString(screenJson.get("id").getAsString());
-        Screen screen = new Screen(world, x, y, z, facing, width, height, visible, id);
+        Screen screen = new Screen(world, x, y, z, facing, width, height, visible, muted, id);
         if (screenJson.has("preview_screens")) {
             JsonArray previewScreensJson = screenJson.getAsJsonArray("preview_screens");
             for (JsonElement jsonElement : previewScreensJson) {

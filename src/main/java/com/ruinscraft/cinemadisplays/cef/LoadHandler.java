@@ -25,6 +25,10 @@ public class LoadHandler implements CefLoadHandler {
         if (screen != null) {
             Video video = screen.getVideo();
             video.start(frame);
+
+            if (screen.isMuted()) {
+                video.setVolume(frame, 0f);
+            }
         }
     }
 

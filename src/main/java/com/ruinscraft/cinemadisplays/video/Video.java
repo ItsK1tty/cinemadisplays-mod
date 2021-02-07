@@ -52,4 +52,10 @@ public abstract class Video {
 
     public abstract void start(CefFrame frame);
 
+    public void setVolume(CefFrame frame, float volume) {
+        String js = "th_volume('%d');";
+        js = String.format(js, (int) (volume * 100));
+        frame.executeJavaScript(js, frame.getURL(), 0);
+    }
+
 }
