@@ -27,11 +27,10 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         ScreenManager screenManager = CinemaDisplaysMod.getInstance().getScreenManager();
         Screen screen = screenManager.getScreen(entity.getPos());
 
-        if (screen == null) {
+        if (screen == null || !screen.isVisible()) {
             return;
         }
 
-        matrices.push();
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
         glEnable(GL_TEXTURE_2D);
@@ -40,13 +39,11 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        RenderUtil.moveHorizontal(matrices, screen.getFacing(), 1);
-        RenderUtil.moveVertical(matrices, 1);
-        RenderUtil.moveForward(matrices, screen.getFacing(), 0.01f);
+        matrices.push();
+        matrices.translate(1, 1, 0);
+        RenderUtil.moveForward(matrices, screen.getFacing(), 0.008f);
         RenderUtil.fixRotation(matrices, screen.getFacing());
-
         matrices.scale(screen.getWidth(), screen.getHeight(), 0);
-
         // If this is the active screen, render the browser texture if available
         if (screenManager.hasActive()
                 && screenManager.getActive().getBlockPos().equals(entity.getPos())
@@ -56,11 +53,11 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         } else {
             RenderUtil.renderBlack(matrices, tessellator, buffer);
         }
+        matrices.pop();
 
         glEnable(GL_LIGHTING);
         glEnable(GL_CULL_FACE);
         RenderSystem.disableDepthTest();
-        matrices.pop();
     }
 
     @Override

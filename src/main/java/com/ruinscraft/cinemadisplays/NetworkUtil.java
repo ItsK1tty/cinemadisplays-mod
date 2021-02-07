@@ -8,10 +8,7 @@ import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.Screen;
-import com.ruinscraft.cinemadisplays.video.FileVideo;
-import com.ruinscraft.cinemadisplays.video.TwitchVideo;
-import com.ruinscraft.cinemadisplays.video.Video;
-import com.ruinscraft.cinemadisplays.video.YouTubeVideo;
+import com.ruinscraft.cinemadisplays.video.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -156,8 +153,9 @@ public final class NetworkUtil {
         String facing = screenJson.get("facing").getAsString();
         int width = screenJson.get("width").getAsInt();
         int height = screenJson.get("height").getAsInt();
+        boolean visible = screenJson.get("visible").getAsBoolean();
         UUID id = UUID.fromString(screenJson.get("id").getAsString());
-        Screen screen = new Screen(world, x, y, z, facing, width, height, id);
+        Screen screen = new Screen(world, x, y, z, facing, width, height, visible, id);
         if (screenJson.has("preview_screens")) {
             JsonArray previewScreensJson = screenJson.getAsJsonArray("preview_screens");
             for (JsonElement jsonElement : previewScreensJson) {
@@ -182,12 +180,15 @@ public final class NetworkUtil {
                 String channelName = videoJson.get("channel_name").getAsString();
                 return new YouTubeVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, videoId, channelName);
             case "file":
-                String url = videoJson.get("url").getAsString();
+                String fileUrl = videoJson.get("url").getAsString();
                 boolean loop = videoJson.get("loop").getAsBoolean();
-                return new FileVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, url, loop);
+                return new FileVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, fileUrl, loop);
             case "twitch":
                 String twitchUser = videoJson.get("twitch_user").getAsString();
                 return new TwitchVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, twitchUser);
+            case "hls":
+                String hlsUrl = videoJson.get("url").getAsString();
+                return new HLSVideo(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt, hlsUrl);
             default:
                 return null;
         }

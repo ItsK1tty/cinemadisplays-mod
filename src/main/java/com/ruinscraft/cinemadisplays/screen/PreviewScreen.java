@@ -17,6 +17,8 @@ import java.util.UUID;
 
 public class PreviewScreen {
 
+    private static NativeImageBackedTexture noVideoPreviewScreenTexture;
+
     private UUID parentScreenId;
     private String world;
     private int x;
@@ -72,6 +74,32 @@ public class PreviewScreen {
         this.video = video;
 
         new Thread(() -> {
+            if (video == null) {
+                if (thumbnailTexture != null) {
+                    thumbnailTexture.close();
+                    thumbnailTexture = null;
+                }
+
+                // Download no video preview screen texture if not already downloaded
+                try {
+                    URL url = new URL("https://cdn.ruinscraft.com/cinema/media/flatscreen_bars.jpg");
+                    URLConnection conn = url.openConnection();
+                    conn.connect();
+
+                    try (InputStream is = url.openStream()) {
+                        if (previewScreenTexture != null) {
+                            previewScreenTexture.close();
+                        }
+
+                        previewScreenTexture = new NativeImageBackedTexture(NativeImage.read(is));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return;
+            }
+
             // Download preview screen
             try {
                 URL url = new URL(video.getPreviewScreenTextureUrl());
@@ -86,7 +114,6 @@ public class PreviewScreen {
                     previewScreenTexture = new NativeImageBackedTexture(NativeImage.read(is));
                 }
             } catch (Exception e) {
-                System.out.println("Could not download preview screen texture from: " + video.getPreviewScreenTextureUrl());
                 e.printStackTrace();
             }
 
@@ -104,7 +131,6 @@ public class PreviewScreen {
                     thumbnailTexture = new NativeImageBackedTexture(NativeImage.read(is));
                 }
             } catch (Exception e) {
-                System.out.println("Could not download video thumbnail texture from: " + video.getThumbnailUrl());
                 e.printStackTrace();
             }
         }).start();

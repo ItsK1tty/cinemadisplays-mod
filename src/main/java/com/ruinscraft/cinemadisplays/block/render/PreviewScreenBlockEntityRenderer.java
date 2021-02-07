@@ -30,7 +30,7 @@ public class PreviewScreenBlockEntityRenderer extends BlockEntityRenderer<Previe
         PreviewScreenManager previewScreenManager = CinemaDisplaysMod.getInstance().getPreviewScreenManager();
         PreviewScreen previewScreen = previewScreenManager.getPreviewScreen(entity.getPos());
 
-        if (previewScreen == null || previewScreen.getVideo() == null) {
+        if (previewScreen == null) {
             return;
         }
 
@@ -79,11 +79,22 @@ public class PreviewScreenBlockEntityRenderer extends BlockEntityRenderer<Previe
             matrices.multiply(new Quaternion(180, 0, 0, true));
             matrices.scale(0.02f, 0.02f, 0.02f);
             TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-            textRenderer.draw(matrices, previewScreen.getVideo().getTitleShort(), 0F, 0F, 16777215);
-            if (previewScreen.getVideo() instanceof YouTubeVideo) {
-                RenderUtil.moveVertical(matrices, 78f);
-                textRenderer.draw(matrices, ((YouTubeVideo) previewScreen.getVideo()).getChannelNameShort(), 0F, 0F, 16777215);
+            final String topText;
+            final String bottomText;
+            if (previewScreen.getVideo() == null) {
+                topText = "NOTHING PLAYING";
+                bottomText = "";
+            } else {
+                topText = previewScreen.getVideo().getTitleShort();
+                if (previewScreen.getVideo() instanceof YouTubeVideo) {
+                    bottomText = ((YouTubeVideo) previewScreen.getVideo()).getChannelNameShort();
+                } else {
+                    bottomText = "";
+                }
             }
+            textRenderer.draw(matrices, topText, 0F, 0F, 16777215);
+            RenderUtil.moveVertical(matrices, 78f);
+            textRenderer.draw(matrices, bottomText, 0F, 0F, 16777215);
             matrices.pop();
         }
         // Render text end

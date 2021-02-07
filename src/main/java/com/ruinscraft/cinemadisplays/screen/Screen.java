@@ -21,6 +21,7 @@ public class Screen {
     private String facing;
     private int width;
     private int height;
+    private boolean visible;
     private UUID id;
     private List<PreviewScreen> previewScreens;
 
@@ -28,7 +29,7 @@ public class Screen {
     private transient BlockPos blockPos; // used as a cache for performance
     private transient boolean unregistered;
 
-    public Screen(String world, int x, int y, int z, String facing, int width, int height, UUID id) {
+    public Screen(String world, int x, int y, int z, String facing, int width, int height, boolean visible, UUID id) {
         this.world = world;
         this.x = x;
         this.y = y;
@@ -36,6 +37,7 @@ public class Screen {
         this.facing = facing;
         this.width = width;
         this.height = height;
+        this.visible = visible;
         this.id = id;
         previewScreens = new ArrayList<>();
         blockPos = new BlockPos(new Vec3d(x, y, z));
@@ -67,6 +69,10 @@ public class Screen {
 
     public int getHeight() {
         return height;
+    }
+
+    public boolean isVisible() {
+        return visible;
     }
 
     public UUID getId() {
