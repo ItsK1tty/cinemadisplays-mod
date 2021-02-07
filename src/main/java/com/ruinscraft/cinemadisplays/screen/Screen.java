@@ -1,12 +1,14 @@
 package com.ruinscraft.cinemadisplays.screen;
 
 import com.ruinscraft.cinemadisplays.block.ScreenBlock;
-import com.ruinscraft.cinemadisplays.video.Video;
+import com.ruinscraft.cinemadisplays.cef.CefUtil;
+import com.ruinscraft.cinemadisplays.video.*;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.cef.browser.CefBrowserOsr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class Screen {
     private UUID id;
     private List<PreviewScreen> previewScreens;
 
+    private transient CefBrowserOsr browser;
     private transient Video video;
     private transient BlockPos blockPos; // used as a cache for performance
     private transient boolean unregistered;
@@ -87,12 +90,53 @@ public class Screen {
         previewScreens.add(previewScreen);
     }
 
-    public Video getVideo() {
-        return video;
+    public CefBrowserOsr getBrowser() {
+        return browser;
     }
 
-    public void setVideo(Video video) {
+    public boolean hasBrowser() {
+        return browser != null;
+    }
+
+    public void playVideo(Video video) {
         this.video = video;
+
+        closeBrowser();
+
+        String startUrl;
+
+        if (video instanceof YouTubeVideo) {
+            startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/youtube.html";
+        } else if (video instanceof FileVideo) {
+            FileVideo fileVideo = (FileVideo) video;
+
+            if (fileVideo.isLoop()) {
+                startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/fileloop.html";
+            } else {
+                startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/file.html";
+            }
+        } else if (video instanceof TwitchVideo) {
+            startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/twitch.html";
+        } else if (video instanceof HLSVideo) {
+            startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/hls.html";
+        } else {
+            startUrl = null;
+        }
+
+        if (startUrl != null) {
+            browser = CefUtil.createBrowser(startUrl, this);
+        }
+    }
+
+    public void closeBrowser() {
+        if (browser != null) {
+            browser.close();
+            browser = null;
+        }
+    }
+
+    public Video getVideo() {
+        return video;
     }
 
     public BlockPos getBlockPos() {

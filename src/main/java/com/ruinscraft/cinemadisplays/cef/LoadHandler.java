@@ -20,8 +20,9 @@ public class LoadHandler implements CefLoadHandler {
 
     @Override
     public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
-        if (CinemaDisplaysMod.getInstance().getScreenManager().hasActive()) {
-            Screen screen = CinemaDisplaysMod.getInstance().getScreenManager().getActive();
+        Screen screen = CinemaDisplaysMod.getInstance().getScreenManager().getScreen(browser.getIdentifier());
+
+        if (screen != null) {
             Video video = screen.getVideo();
             video.start(frame);
         }

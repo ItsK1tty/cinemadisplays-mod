@@ -2,54 +2,75 @@ package com.ruinscraft.cinemadisplays.screen;
 
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ScreenManager {
 
-    private Screen active;
-    private List<Screen> screens;
+    private Map<UUID, Screen> screens;
 
     public ScreenManager() {
-        screens = new ArrayList<>();
-    }
-
-    public List<Screen> getScreens() {
-        return screens;
+        screens = new HashMap<>();
     }
 
     public void setScreens(List<Screen> screens) {
         // Unregister any old screens
-        for (Screen screen : this.screens) {
+        for (Screen screen : this.screens.values()) {
             screen.unregister();
         }
+
+        this.screens.clear();
 
         // Register new screens
         for (Screen screen : screens) {
             screen.register();
+            this.screens.put(screen.getId(), screen);
+        }
+    }
+
+    public Screen getScreen(UUID screenId) {
+        return screens.get(screenId);
+    }
+
+    // Used for CefClient LoadHandler
+    public Screen getScreen(int browserId) {
+        for (Screen screen : screens.values()) {
+            if (screen.hasBrowser()) {
+                if (screen.getBrowser().getIdentifier() == browserId) {
+                    return screen;
+                }
+            }
         }
 
-        this.screens = screens;
+        return null;
     }
 
-    public Screen getActive() {
-        return active;
+    public void unloadAll() {
+        for (Screen screen : screens.values()) {
+            screen.closeBrowser();
+        }
+
+        screens.clear();
     }
 
-    public void setActive(Screen active) {
-        this.active = active;
+    public void updateAll() {
+        for (Screen screen : screens.values()) {
+            if (screen.hasBrowser()) {
+                screen.getBrowser().update();
+            }
+        }
     }
 
-    public boolean hasActive() {
-        return active != null;
-    }
-
+    @Deprecated
     public Screen getScreen(BlockPos blockPos) {
-        for (Screen screen : screens) {
+        for (Screen screen : screens.values()) {
             if (screen.getBlockPos().equals(blockPos)) {
                 return screen;
             }
         }
+
         return null;
     }
 

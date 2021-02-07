@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.Screen;
@@ -65,21 +64,15 @@ public final class NetworkUtil {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_LOAD_SCREEN, (client, handler, buf, responseSender) -> {
-            String screenJsonRaw = readString(buf);
+            UUID screenId = UUID.fromString(readString(buf));
             String videoJsonRaw = readString(buf);
-
             client.submit(() -> {
                 try {
-                    JsonObject screenJson = JSON_PARSER.parse(screenJsonRaw).getAsJsonObject();
+                    Screen screen = CinemaDisplaysMod.getInstance().getScreenManager().getScreen(screenId);
+                    if (screen == null) return;
                     JsonObject videoJson = JSON_PARSER.parse(videoJsonRaw).getAsJsonObject();
-                    Screen screen = deserializeScreen(screenJson);
                     Video video = deserializeVideo(videoJson);
-
-                    screen.setVideo(video);
-
-                    CefUtil.closeBrowser();
-                    CinemaDisplaysMod.getInstance().getScreenManager().setActive(screen);
-                    CefUtil.playVideo(video);
+                    screen.playVideo(video);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -87,21 +80,13 @@ public final class NetworkUtil {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_UNLOAD_SCREEN, (client, handler, buf, responseSender) -> {
-            String screenJsonRaw = readString(buf);
+            UUID screenId = UUID.fromString(readString(buf));
 
             client.submit(() -> {
                 try {
-                    JsonObject screenJson = JSON_PARSER.parse(screenJsonRaw).getAsJsonObject();
-                    Screen screen = deserializeScreen(screenJson);
-
-                    if (CinemaDisplaysMod.getInstance().getScreenManager().hasActive()) {
-                        UUID activeScreenId = CinemaDisplaysMod.getInstance().getScreenManager().getActive().getId();
-
-                        if (screen.getId().equals(activeScreenId)) {
-                            CefUtil.closeBrowser();
-                            CinemaDisplaysMod.getInstance().getScreenManager().setActive(null);
-                        }
-                    }
+                    Screen screen = CinemaDisplaysMod.getInstance().getScreenManager().getScreen(screenId);
+                    if (screen == null) return;
+                    screen.closeBrowser();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -3,7 +3,6 @@ package com.ruinscraft.cinemadisplays.block.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.block.ScreenBlockEntity;
-import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
@@ -31,6 +30,7 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
             return;
         }
 
+        // General setup
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
         glEnable(GL_TEXTURE_2D);
@@ -39,22 +39,23 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        matrices.push();
-        matrices.translate(1, 1, 0);
-        RenderUtil.moveForward(matrices, screen.getFacing(), 0.008f);
-        RenderUtil.fixRotation(matrices, screen.getFacing());
-        matrices.scale(screen.getWidth(), screen.getHeight(), 0);
-        // If this is the active screen, render the browser texture if available
-        if (screenManager.hasActive()
-                && screenManager.getActive().getBlockPos().equals(entity.getPos())
-                && CefUtil.hasActiveBrowser()) {
-            int glId = CefUtil.getActiveBrowser().renderer_.texture_id_[0];
-            RenderUtil.renderTexture(matrices, tessellator, buffer, glId);
-        } else {
-            RenderUtil.renderBlack(matrices, tessellator, buffer);
+        // Texture rendering
+        {
+            matrices.push();
+            matrices.translate(1, 1, 0);
+            RenderUtil.moveForward(matrices, screen.getFacing(), 0.008f);
+            RenderUtil.fixRotation(matrices, screen.getFacing());
+            matrices.scale(screen.getWidth(), screen.getHeight(), 0);
+            if (screen.hasBrowser()) {
+                int glId = screen.getBrowser().renderer_.texture_id_[0];
+                RenderUtil.renderTexture(matrices, tessellator, buffer, glId);
+            } else {
+                RenderUtil.renderBlack(matrices, tessellator, buffer);
+            }
+            matrices.pop();
         }
-        matrices.pop();
 
+        // Cleanup
         glEnable(GL_LIGHTING);
         glEnable(GL_CULL_FACE);
         RenderSystem.disableDepthTest();

@@ -39,7 +39,6 @@ public class CinemaDisplaysMod implements ModInitializer {
             e.printStackTrace();
         }
 
-        CefUtil.registerCefGuiScreen();
         CefUtil.registerCefTick();
 
         ScreenBlock.register();
