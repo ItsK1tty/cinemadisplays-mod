@@ -29,7 +29,7 @@ public final class CefUtil {
             System.loadLibrary("libcef");
             System.loadLibrary("jcef");
         } else if (os.contains("mac")) {
-            // TODO:
+            System.loadLibrary("jcef");
         } else if (os.contains("linux")) {
             // TODO:
         }
@@ -43,9 +43,12 @@ public final class CefUtil {
         cefSettings.ignore_certificate_errors = true;
         cefSettings.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36";
 
-        ArrayList<String> cefSwitches = Lists.newArrayList("--autoplay-policy=no-user-gesture-required", "--disable-web-security");
+        String[] cefSwitches = new String[] {
+                "--autoplay-policy=no-user-gesture-required",
+                "--disable-web-security"
+        };
 
-        cefAppInstance = CefApp.getInstance(cefSwitches.toArray(new String[cefSwitches.size()]), cefSettings);
+        cefAppInstance = CefApp.getInstance(cefSwitches), cefSettings);
         cefClientInstance = cefAppInstance.createClient();
         cefClientInstance.addLoadHandler(new LoadHandler());
 
