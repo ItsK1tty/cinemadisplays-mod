@@ -47,7 +47,7 @@ public final class CefUtil {
         cefSettings.cache_path = new File("chromium", "cache").getAbsolutePath();
         cefSettings.ignore_certificate_errors = true;
         cefSettings.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36";
-        
+
         cefAppInstance = CefApp.getInstance(cefSwitches, cefSettings);
         cefClientInstance = cefAppInstance.createClient();
         cefClientInstance.addLoadHandler(new LoadHandler());

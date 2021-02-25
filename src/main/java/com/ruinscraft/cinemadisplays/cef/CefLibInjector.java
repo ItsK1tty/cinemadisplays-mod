@@ -19,12 +19,10 @@ public final class CefLibInjector {
             defaultPath = getCommandOutput("cmd.exe", "/c", "echo %PATH%");
             cefNativesPath = currentRelativePath + "\\chromium\\win64";
         } else if (os.contains("mac")) {
-            // TODO:
-            defaultPath = getCommandOutput("echo $PATH");
+            defaultPath = getCommandOutput("/bin/bash", "-c", "echo $PATH");
             cefNativesPath = currentRelativePath + "/chromium/macos";
         } else if (os.contains("linux")) {
-            // TODO:
-            defaultPath = getCommandOutput("echo $PATH");
+            defaultPath = getCommandOutput("/bin/bash", "-c", "echo $PATH");
             cefNativesPath = currentRelativePath + "/chromium/linux64";
         } else {
             throw new RuntimeException("Unknown operating system: " + os);
