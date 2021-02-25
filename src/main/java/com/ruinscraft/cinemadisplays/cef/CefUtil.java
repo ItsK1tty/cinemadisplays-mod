@@ -34,7 +34,12 @@ public final class CefUtil {
             // TODO:
         }
 
-        CefApp.startup(new String[0]);
+        String[] cefSwitches = new String[] {
+                "--autoplay-policy=no-user-gesture-required",
+                "--disable-web-security"
+        };
+
+        CefApp.startup(cefSwitches);
 
         CefSettings cefSettings = new CefSettings();
         cefSettings.windowless_rendering_enabled = true;
@@ -42,13 +47,8 @@ public final class CefUtil {
         cefSettings.cache_path = new File("chromium", "cache").getAbsolutePath();
         cefSettings.ignore_certificate_errors = true;
         cefSettings.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36";
-
-        String[] cefSwitches = new String[] {
-                "--autoplay-policy=no-user-gesture-required",
-                "--disable-web-security"
-        };
-
-        cefAppInstance = CefApp.getInstance(cefSwitches), cefSettings);
+        
+        cefAppInstance = CefApp.getInstance(cefSwitches, cefSettings);
         cefClientInstance = cefAppInstance.createClient();
         cefClientInstance.addLoadHandler(new LoadHandler());
 
