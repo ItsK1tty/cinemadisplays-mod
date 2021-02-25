@@ -421,10 +421,7 @@ public class CefApp extends CefAppHandlerAdapter {
                     if (N_Initialize(appHandler_, settings)) setState(CefAppState.INITIALIZED);
                 }
             };
-            if (SwingUtilities.isEventDispatchThread())
-                r.run();
-            else
-                SwingUtilities.invokeAndWait(r);
+            r.run();
         } catch (Exception e) {
             e.printStackTrace();
         }

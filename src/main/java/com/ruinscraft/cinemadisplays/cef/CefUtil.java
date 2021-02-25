@@ -1,6 +1,5 @@
 package com.ruinscraft.cinemadisplays.cef;
 
-import com.google.common.collect.Lists;
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -10,7 +9,6 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowserOsr;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public final class CefUtil {
 
