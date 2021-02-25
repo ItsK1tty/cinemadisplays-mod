@@ -20,7 +20,7 @@ public final class CefLibInjector {
             cefNativesPath = currentRelativePath + "\\chromium\\win64";
         } else if (os.contains("mac")) {
             defaultPath = getCommandOutput("/bin/bash", "-c", "echo $PATH");
-            cefNativesPath = currentRelativePath + "/chromium/macos";
+            cefNativesPath = currentRelativePath + "/chromium/macos/jcef_app.app/Contents/Java";
         } else if (os.contains("linux")) {
             defaultPath = getCommandOutput("/bin/bash", "-c", "echo $PATH");
             cefNativesPath = currentRelativePath + "/chromium/linux64";
