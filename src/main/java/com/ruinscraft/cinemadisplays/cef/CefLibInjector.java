@@ -13,17 +13,17 @@ public final class CefLibInjector {
         final String defaultPath;
         final String currentPath = System.getProperty("java.library.path");
         final String cefNativesPath;
-        final String currentRelativePath = Paths.get("").toAbsolutePath().toString();
+        final String minecraftRootPath = Paths.get("").toAbsolutePath().toString();
 
         if (os.contains("win")) {
             defaultPath = getCommandOutput("cmd.exe", "/c", "echo %PATH%");
-            cefNativesPath = currentRelativePath + "\\chromium\\win64";
+            cefNativesPath = minecraftRootPath + "\\chromium\\win64";
         } else if (os.contains("mac")) {
             defaultPath = getCommandOutput("/bin/bash", "-c", "echo $PATH");
-            cefNativesPath = currentRelativePath + "/chromium/macos/jcef_app.app/Contents/Java";
+            cefNativesPath = minecraftRootPath + "/chromium/macos/jcef_app.app/Contents/Java";
         } else if (os.contains("linux")) {
             defaultPath = getCommandOutput("/bin/bash", "-c", "echo $PATH");
-            cefNativesPath = currentRelativePath + "/chromium/linux64";
+            cefNativesPath = minecraftRootPath + "/chromium/linux64";
         } else {
             throw new RuntimeException("Unknown operating system: " + os);
         }
@@ -31,6 +31,8 @@ public final class CefLibInjector {
         String newPath = defaultPath +
                 File.pathSeparator +
                 currentPath +
+                File.pathSeparator +
+                minecraftRootPath +
                 File.pathSeparator +
                 cefNativesPath;
 
@@ -50,10 +52,8 @@ public final class CefLibInjector {
     private static String getCommandOutput(String... command) throws Exception {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command(command);
-
         Process process = processBuilder.start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
         return reader.readLine();
     }
 

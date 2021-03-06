@@ -11,6 +11,7 @@ import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.util.Util;
 
 public class CinemaDisplaysMod implements ModInitializer {
 
@@ -33,12 +34,6 @@ public class CinemaDisplaysMod implements ModInitializer {
 
         instance = this;
 
-        try {
-            CefUtil.init();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         CefUtil.registerCefTick();
 
         ScreenBlock.register();
@@ -53,6 +48,16 @@ public class CinemaDisplaysMod implements ModInitializer {
 
         screenManager = new ScreenManager();
         previewScreenManager = new PreviewScreenManager();
+
+        Util.getBootstrapExecutor().execute(() -> {
+            try {
+                CefUtil.init();
+            } catch (Exception e) {
+                System.out.println("Could not initialize CEF.");
+                System.out.println("Cinema Displays Mod will not display screens.");
+                e.printStackTrace();
+            }
+        });
 
         System.out.println("Cinema Displays Mod loaded!");
     }

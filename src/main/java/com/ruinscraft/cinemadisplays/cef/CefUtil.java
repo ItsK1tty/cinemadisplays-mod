@@ -19,25 +19,14 @@ public final class CefUtil {
     public static void init() throws Exception {
         System.out.println("Initializing CEF...");
 
-        String os = System.getProperty("os.name").toLowerCase();
-
-        if (os.contains("win")) {
-            System.loadLibrary("jawt");
-            System.loadLibrary("chrome_elf");
-            System.loadLibrary("libcef");
-            System.loadLibrary("jcef");
-        } else if (os.contains("mac")) {
-            System.loadLibrary("jcef");
-        } else if (os.contains("linux")) {
-            // TODO:
-        }
-
         String[] cefSwitches = new String[] {
                 "--autoplay-policy=no-user-gesture-required",
                 "--disable-web-security"
         };
 
-        CefApp.startup(cefSwitches);
+        if (!CefApp.startup(cefSwitches)) {
+            throw new Exception("Failed to run CEF startup.");
+        }
 
         CefSettings cefSettings = new CefSettings();
         cefSettings.windowless_rendering_enabled = true;
@@ -50,8 +39,9 @@ public final class CefUtil {
         cefClientInstance = cefAppInstance.createClient();
         cefClientInstance.addLoadHandler(new LoadHandler());
 
-        System.out.println("CEF initialized!");
         init = true;
+
+        System.out.println("CEF initialized!");
     }
 
     public static boolean isInit() {
