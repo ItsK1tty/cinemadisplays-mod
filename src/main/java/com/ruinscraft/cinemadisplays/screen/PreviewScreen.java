@@ -82,7 +82,7 @@ public class PreviewScreen {
 
                 // Download no video preview screen texture if not already downloaded
                 try {
-                    URL url = new URL("https://cdn.ruinscraft.com/cinema/media/images/flatscreen_bars.jpg");
+                    URL url = new URL("https://cdn.ruinscraft.com/media/images/flatscreen_bars.jpg");
                     URLConnection conn = url.openConnection();
                     conn.connect();
 
