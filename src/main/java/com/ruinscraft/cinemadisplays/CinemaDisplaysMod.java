@@ -49,17 +49,25 @@ public class CinemaDisplaysMod implements ModInitializer {
         screenManager = new ScreenManager();
         previewScreenManager = new PreviewScreenManager();
 
-        Util.getBootstrapExecutor().execute(() -> {
+        Runnable cefInitRunnable = () -> {
             try {
                 CefUtil.init();
+                System.out.println("Cinema Displays Mod loaded!");
             } catch (Exception e) {
                 System.out.println("Could not initialize CEF.");
                 System.out.println("Cinema Displays Mod will not display screens.");
                 e.printStackTrace();
             }
-        });
+        };
 
-        System.out.println("Cinema Displays Mod loaded!");
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("mac")) {
+            // Run CEF init on MC Bootstrap executor
+            Util.getBootstrapExecutor().execute(cefInitRunnable);
+        } else {
+            cefInitRunnable.run();
+        }
     }
 
     public ScreenManager getScreenManager() {
