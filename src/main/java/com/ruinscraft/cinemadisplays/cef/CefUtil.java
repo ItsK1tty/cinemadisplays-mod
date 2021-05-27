@@ -16,16 +16,14 @@ public final class CefUtil {
     private static CefApp cefAppInstance;
     private static CefClient cefClientInstance;
 
-    public static void init() throws Exception {
-        System.out.println("Initializing CEF...");
-
-        String[] cefSwitches = new String[] {
+    public static boolean init() {
+        String[] cefSwitches = new String[]{
                 "--autoplay-policy=no-user-gesture-required",
                 "--disable-web-security"
         };
 
         if (!CefApp.startup(cefSwitches)) {
-            throw new Exception("Failed to run CEF startup.");
+            return false;
         }
 
         CefSettings cefSettings = new CefSettings();
@@ -39,9 +37,7 @@ public final class CefUtil {
         cefClientInstance = cefAppInstance.createClient();
         cefClientInstance.addLoadHandler(new LoadHandler());
 
-        init = true;
-
-        System.out.println("CEF initialized!");
+        return init = true;
     }
 
     public static boolean isInit() {
