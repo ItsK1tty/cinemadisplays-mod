@@ -10,6 +10,8 @@ import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.util.Util;
+import org.cef.OS;
 
 public class CinemaDisplaysMod implements ModInitializer {
 
@@ -32,6 +34,17 @@ public class CinemaDisplaysMod implements ModInitializer {
     @Override
     public void onInitialize() {
         instance = this;
+
+        // Temp hack for initializing CEF on macos
+        if (OS.isMacintosh()) {
+            Util.getBootstrapExecutor().execute(() -> {
+                if (CefUtil.init()) {
+                    System.out.println("Chromium Embedded Framework initialized");
+                } else {
+                    System.out.println("Could not initialize Chromium Embedded Framework");
+                }
+            });
+        }
 
         CefUtil.registerCefTick();
 

@@ -8,9 +8,6 @@ import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.handler.CefAppHandler;
 import org.cef.handler.CefAppHandlerAdapter;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -121,7 +118,7 @@ public class CefApp extends CefAppHandlerAdapter {
     private static CefApp self = null;
     private static CefAppHandler appHandler_ = null;
     private static CefAppState state_ = CefAppState.NONE;
-    private Timer workTimer_ = null;
+//    private Timer workTimer_ = null;
     private HashSet<CefClient> clients_ = new HashSet<CefClient>();
     private CefSettings settings_ = null;
 
@@ -412,49 +409,49 @@ public class CefApp extends CefAppHandlerAdapter {
      * Windows with windowed rendering.
      */
     public final void doMessageLoopWork(final long delay_ms) {
-        // Execute on the AWT event dispatching thread.
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                if (getState() == CefAppState.TERMINATED) return;
-
-                // The maximum number of milliseconds we're willing to wait between
-                // calls to DoMessageLoopWork().
-                final long kMaxTimerDelay = 1000 / 30; // 30fps
-
-                if (workTimer_ != null) {
-                    workTimer_.stop();
-                    workTimer_ = null;
-                }
-
-                if (delay_ms <= 0) {
-                    // Execute the work immediately.
-                    N_DoMessageLoopWork();
-
-                    // Schedule more work later.
-                    doMessageLoopWork(kMaxTimerDelay);
-                } else {
-                    long timer_delay_ms = delay_ms;
-                    // Never wait longer than the maximum allowed time.
-                    if (timer_delay_ms > kMaxTimerDelay) timer_delay_ms = kMaxTimerDelay;
-
-                    workTimer_ = new Timer((int) timer_delay_ms, new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent evt) {
-                            // Timer has timed out.
-                            workTimer_.stop();
-                            workTimer_ = null;
-
-                            N_DoMessageLoopWork();
-
-                            // Schedule more work later.
-                            doMessageLoopWork(kMaxTimerDelay);
-                        }
-                    });
-                    workTimer_.start();
-                }
-            }
-        });
+//        // Execute on the AWT event dispatching thread.
+//        SwingUtilities.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (getState() == CefAppState.TERMINATED) return;
+//
+//                // The maximum number of milliseconds we're willing to wait between
+//                // calls to DoMessageLoopWork().
+//                final long kMaxTimerDelay = 1000 / 30; // 30fps
+//
+//                if (workTimer_ != null) {
+//                    workTimer_.stop();
+//                    workTimer_ = null;
+//                }
+//
+//                if (delay_ms <= 0) {
+//                    // Execute the work immediately.
+//                    N_DoMessageLoopWork();
+//
+//                    // Schedule more work later.
+//                    doMessageLoopWork(kMaxTimerDelay);
+//                } else {
+//                    long timer_delay_ms = delay_ms;
+//                    // Never wait longer than the maximum allowed time.
+//                    if (timer_delay_ms > kMaxTimerDelay) timer_delay_ms = kMaxTimerDelay;
+//
+//                    workTimer_ = new Timer((int) timer_delay_ms, new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent evt) {
+//                            // Timer has timed out.
+//                            workTimer_.stop();
+//                            workTimer_ = null;
+//
+//                            N_DoMessageLoopWork();
+//
+//                            // Schedule more work later.
+//                            doMessageLoopWork(kMaxTimerDelay);
+//                        }
+//                    });
+//                    workTimer_.start();
+//                }
+//            }
+//        });
     }
 
     /**
@@ -468,17 +465,22 @@ public class CefApp extends CefAppHandlerAdapter {
     public static final boolean startup(String[] args) {
         String jcefPath = getJcefLibPath();
 
-        if (OS.isLinux() || OS.isMacintosh()) {
-            System.load(jcefPath + "/libcef.so");
-            System.load(jcefPath + "/libjcef.so");
-            return N_Startup(OS.isMacintosh() ? getCefFrameworkPath(args) : null);
-        } else if (OS.isWindows()) {
+        if (OS.isWindows()) {
+            // TODO:
             SystemBootstrap.loadLibrary("jawt");
             SystemBootstrap.loadLibrary("chrome_elf");
             SystemBootstrap.loadLibrary("libcef");
             SystemBootstrap.loadLibrary("jcef");
             return true;
+        } else if (OS.isMacintosh()) {
+            System.load(jcefPath + "/libjcef.dylib");
+            return N_Startup(getCefFrameworkPath(args));
+        } else if (OS.isLinux()) {
+            System.load(jcefPath + "/libcef.so");
+            System.load(jcefPath + "/libjcef.so");
+            return N_Startup(null);
         }
+
         return false;
     }
 
