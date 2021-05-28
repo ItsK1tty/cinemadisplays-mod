@@ -466,11 +466,12 @@ public class CefApp extends CefAppHandlerAdapter {
         String jcefPath = getJcefLibPath();
 
         if (OS.isWindows()) {
-            // TODO:
-            SystemBootstrap.loadLibrary("jawt");
-            SystemBootstrap.loadLibrary("chrome_elf");
-            SystemBootstrap.loadLibrary("libcef");
-            SystemBootstrap.loadLibrary("jcef");
+            System.load(jcefPath + "\\d3dcompiler_47.dll");
+            System.load(jcefPath + "\\libGLESv2.dll");
+            System.load(jcefPath + "\\libEGL.dll");
+            System.load(jcefPath + "\\chrome_elf.dll");
+            System.load(jcefPath + "\\libcef.dll");
+            System.load(jcefPath + "\\jcef.dll");
             return true;
         } else if (OS.isMacintosh()) {
             System.load(jcefPath + "/libjcef.dylib");
