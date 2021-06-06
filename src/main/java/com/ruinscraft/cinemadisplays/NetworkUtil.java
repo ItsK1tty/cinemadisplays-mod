@@ -35,7 +35,7 @@ public final class NetworkUtil {
 
     private static String readString(PacketByteBuf buf) {
         int len = buf.readShort();
-        byte data[] = new byte[len];
+        byte[] data = new byte[len];
         buf.readBytes(data, 0, len);
         return new String(data, StandardCharsets.UTF_8);
     }

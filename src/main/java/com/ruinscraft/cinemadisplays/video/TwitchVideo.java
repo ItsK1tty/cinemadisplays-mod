@@ -4,7 +4,7 @@ import org.cef.browser.CefFrame;
 
 public class TwitchVideo extends Video {
 
-    private String twitchUser;
+    private final String twitchUser;
 
     public TwitchVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String twitchUser) {
         super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);

@@ -1,6 +1,7 @@
 package com.ruinscraft.cinemadisplays.screen;
 
 import net.minecraft.util.math.BlockPos;
+import org.cef.browser.CefBrowserOsr;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 public class ScreenManager {
 
-    private Map<UUID, Screen> screens;
+    private final Map<UUID, Screen> screens;
 
     public ScreenManager() {
         screens = new HashMap<>();
@@ -19,6 +20,7 @@ public class ScreenManager {
         // Unregister any old screens
         for (Screen screen : this.screens.values()) {
             screen.unregister();
+            screen.closeBrowser();
         }
 
         this.screens.clear();
@@ -50,6 +52,7 @@ public class ScreenManager {
     public void unloadAll() {
         for (Screen screen : screens.values()) {
             screen.closeBrowser();
+            screen.unregister();
         }
 
         screens.clear();
@@ -63,7 +66,6 @@ public class ScreenManager {
         }
     }
 
-    @Deprecated
     public Screen getScreen(BlockPos blockPos) {
         for (Screen screen : screens.values()) {
             if (screen.getBlockPos().equals(blockPos)) {

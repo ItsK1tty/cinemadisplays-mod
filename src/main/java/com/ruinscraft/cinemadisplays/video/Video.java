@@ -4,11 +4,11 @@ import org.cef.browser.CefFrame;
 
 public abstract class Video {
 
-    private String title;
-    private String thumbnailUrl;
-    private String previewScreenTextureUrl;
-    private long durationSeconds;
-    private long startedAt;
+    private final String title;
+    private final String thumbnailUrl;
+    private final String previewScreenTextureUrl;
+    private final long durationSeconds;
+    private final long startedAt;
 
     public Video(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt) {
         this.title = title;

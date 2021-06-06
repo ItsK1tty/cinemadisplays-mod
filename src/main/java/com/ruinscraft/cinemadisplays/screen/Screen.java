@@ -16,21 +16,20 @@ import java.util.UUID;
 
 public class Screen {
 
-    private String world;
-    private int x;
-    private int y;
-    private int z;
-    private String facing;
-    private int width;
-    private int height;
-    private boolean visible;
-    private boolean muted;
-    private UUID id;
-    private List<PreviewScreen> previewScreens;
-
+    private final String world;
+    private final int x;
+    private final int y;
+    private final int z;
+    private final String facing;
+    private final int width;
+    private final int height;
+    private final boolean visible;
+    private final boolean muted;
+    private final UUID id;
+    private final List<PreviewScreen> previewScreens;
+    private final transient BlockPos blockPos; // used as a cache for performance
     private transient CefBrowserOsr browser;
     private transient Video video;
-    private transient BlockPos blockPos; // used as a cache for performance
     private transient boolean unregistered;
 
     public Screen(String world, int x, int y, int z, String facing, int width, int height, boolean visible, boolean muted, UUID id) {
@@ -150,6 +149,10 @@ public class Screen {
     }
 
     public void register() {
+        if (MinecraftClient.getInstance().world == null) {
+            return;
+        }
+
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
 
@@ -171,7 +174,10 @@ public class Screen {
 
     public void unregister() {
         unregistered = true;
-        MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());
+
+        if (MinecraftClient.getInstance().world != null) {
+            MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());
+        }
     }
 
 }

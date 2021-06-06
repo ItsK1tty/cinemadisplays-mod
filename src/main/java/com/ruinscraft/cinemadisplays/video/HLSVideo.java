@@ -4,7 +4,7 @@ import org.cef.browser.CefFrame;
 
 public class HLSVideo extends Video {
 
-    private String url;
+    private final String url;
 
     public HLSVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String url) {
         super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);

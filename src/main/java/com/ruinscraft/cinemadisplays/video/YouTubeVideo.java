@@ -4,8 +4,8 @@ import org.cef.browser.CefFrame;
 
 public class YouTubeVideo extends Video {
 
-    private String videoId;
-    private String channelName;
+    private final String videoId;
+    private final String channelName;
 
     public YouTubeVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String videoId, String channelName) {
         super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);

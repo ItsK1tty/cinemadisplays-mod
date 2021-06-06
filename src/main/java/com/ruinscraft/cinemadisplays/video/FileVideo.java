@@ -7,8 +7,8 @@ import java.net.URLEncoder;
 
 public class FileVideo extends Video {
 
-    private String url;
-    private boolean loop;
+    private final String url;
+    private final boolean loop;
 
     public FileVideo(String title, String thumbnailUrl, String previewScreenTextureUrl, long durationSeconds, long startedAt, String url, boolean loop) {
         super(title, thumbnailUrl, previewScreenTextureUrl, durationSeconds, startedAt);

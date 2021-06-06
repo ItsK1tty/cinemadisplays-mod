@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "CefInitMixin"
+    "CefInitMixin",
+    "UnloadScreensMixin"
   ],
   "injectors": {
     "defaultRequire": 1

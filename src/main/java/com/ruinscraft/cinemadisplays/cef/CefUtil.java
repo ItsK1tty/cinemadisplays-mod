@@ -12,6 +12,9 @@ import java.io.File;
 
 public final class CefUtil {
 
+    private CefUtil() {
+    }
+
     private static boolean init;
     private static CefApp cefAppInstance;
     private static CefClient cefClientInstance;
@@ -75,13 +78,7 @@ public final class CefUtil {
     }
 
     public static void registerCefTick() {
-        ClientTickEvents.START_CLIENT_TICK.register(minecraftClient -> {
-            if (minecraftClient.world == null) {
-                CinemaDisplaysMod.getInstance().getScreenManager().unloadAll();
-            }
-        });
-
-        ClientTickEvents.START_WORLD_TICK.register(client -> {
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (CefUtil.isInit()) {
                 CefUtil.getCefApp().N_DoMessageLoopWork();
                 CinemaDisplaysMod.getInstance().getScreenManager().updateAll();

@@ -19,17 +19,16 @@ public class PreviewScreen {
 
     private static NativeImageBackedTexture noVideoPreviewScreenTexture;
 
-    private UUID parentScreenId;
-    private String world;
-    private int x;
-    private int y;
-    private int z;
-    private String facing;
-
+    private final UUID parentScreenId;
+    private final String world;
+    private final int x;
+    private final int y;
+    private final int z;
+    private final String facing;
+    private final transient BlockPos blockPos; // used as a cache for performance
     private transient NativeImageBackedTexture previewScreenTexture;
     private transient NativeImageBackedTexture thumbnailTexture;
     private transient Video video;
-    private transient BlockPos blockPos; // used as a cache for performance
     private transient boolean unregistered;
 
     public PreviewScreen(UUID parentScreenId, String world, int x, int y, int z, String facing) {
@@ -149,6 +148,10 @@ public class PreviewScreen {
     }
 
     public void register() {
+        if (MinecraftClient.getInstance().world == null) {
+            return;
+        }
+
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
 
@@ -170,7 +173,10 @@ public class PreviewScreen {
 
     public void unregister() {
         unregistered = true;
-        MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());
+
+        if (MinecraftClient.getInstance().world != null) {
+            MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());
+        }
     }
 
 }

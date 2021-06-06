@@ -7,15 +7,10 @@ import java.util.List;
 
 public class PreviewScreenManager {
 
-    private Screen active;
-    private List<PreviewScreen> previewScreens;
+    private final List<PreviewScreen> previewScreens;
 
     public PreviewScreenManager() {
         previewScreens = new ArrayList<>();
-    }
-
-    public List<PreviewScreen> getPreviewScreens() {
-        return previewScreens;
     }
 
     public void addPreviewScreen(PreviewScreen previewScreen) {
@@ -37,6 +32,14 @@ public class PreviewScreenManager {
             }
         }
         return null;
+    }
+
+    public void unloadAll() {
+        for (PreviewScreen previewScreen : previewScreens) {
+            previewScreen.unregister();
+        }
+
+        previewScreens.clear();
     }
 
 }
