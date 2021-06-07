@@ -29,7 +29,7 @@ public class VideoSettings {
 
     public VideoSettings() {
         volume = 1.0f;
-        muteWhenAltTabbed = false;
+        muteWhenAltTabbed = true;
     }
 
     public float getVolume() {
