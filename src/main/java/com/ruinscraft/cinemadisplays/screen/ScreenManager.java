@@ -1,12 +1,8 @@
 package com.ruinscraft.cinemadisplays.screen;
 
 import net.minecraft.util.math.BlockPos;
-import org.cef.browser.CefBrowserOsr;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ScreenManager {
 
@@ -14,6 +10,10 @@ public class ScreenManager {
 
     public ScreenManager() {
         screens = new HashMap<>();
+    }
+
+    public Collection<Screen> getScreens() {
+        return screens.values();
     }
 
     public void setScreens(List<Screen> screens) {

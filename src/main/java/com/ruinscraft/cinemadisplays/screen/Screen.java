@@ -144,6 +144,12 @@ public class Screen {
         return video;
     }
 
+    public void setVolume(float volume) {
+        if (video != null && browser != null) {
+            video.setVolume(browser.getMainFrame(), volume);
+        }
+    }
+
     public BlockPos getBlockPos() {
         return blockPos;
     }

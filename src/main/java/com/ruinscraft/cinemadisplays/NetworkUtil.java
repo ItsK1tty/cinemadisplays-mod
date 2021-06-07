@@ -4,12 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ruinscraft.cinemadisplays.gui.CefSettingsScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.video.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.nio.charset.StandardCharsets;
@@ -24,13 +26,15 @@ public final class NetworkUtil {
     private static final Identifier CHANNEL_LOAD_SCREEN;
     private static final Identifier CHANNEL_UNLOAD_SCREEN;
     private static final Identifier CHANNEL_UPDATE_PREVIEW_SCREEN;
+    private static final Identifier CHANNEL_OPEN_SETTINGS_SCREEN;
 
     static {
         JSON_PARSER = new JsonParser();
-        CHANNEL_SCREENS = new Identifier("cinemadisplays", "screens");
-        CHANNEL_LOAD_SCREEN = new Identifier("cinemadisplays", "load_screen");
-        CHANNEL_UNLOAD_SCREEN = new Identifier("cinemadisplays", "unload_screen");
-        CHANNEL_UPDATE_PREVIEW_SCREEN = new Identifier("cinemadisplays", "update_preview_screen");
+        CHANNEL_SCREENS = new Identifier(CinemaDisplaysMod.MODID, "screens");
+        CHANNEL_LOAD_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "load_screen");
+        CHANNEL_UNLOAD_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "unload_screen");
+        CHANNEL_UPDATE_PREVIEW_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "update_preview_screen");
+        CHANNEL_OPEN_SETTINGS_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "open_settings_screen");
     }
 
     private static String readString(PacketByteBuf buf) {
@@ -109,6 +113,12 @@ public final class NetworkUtil {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            });
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(CHANNEL_OPEN_SETTINGS_SCREEN, (client, handler, buf, responseSender) -> {
+            client.submit(() -> {
+                client.openScreen(new CefSettingsScreen(Text.of("Video Settings")));
             });
         });
     }

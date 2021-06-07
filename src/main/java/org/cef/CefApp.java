@@ -4,6 +4,7 @@
 
 package org.cef;
 
+import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import org.cef.callback.CefSchemeHandlerFactory;
 import org.cef.handler.CefAppHandler;
 import org.cef.handler.CefAppHandlerAdapter;
@@ -351,7 +352,7 @@ public class CefApp extends CefAppHandlerAdapter {
      */
     private final void initialize() {
         String jcefPath = getJcefLibPath();
-        System.out.println("initialize on " + Thread.currentThread() + " with library path " + jcefPath);
+        CinemaDisplaysMod.LOGGER.info("initialize on " + Thread.currentThread() + " with library path " + jcefPath);
 
         CefSettings settings = settings_ != null ? settings_ : new CefSettings();
 
@@ -385,7 +386,7 @@ public class CefApp extends CefAppHandlerAdapter {
      * of a termination event (e.g. someone pressed CMD+Q).
      */
     protected final void handleBeforeTerminate() {
-        System.out.println("Cmd+Q termination request.");
+        CinemaDisplaysMod.LOGGER.info("Cmd+Q termination request.");
         CefAppHandler handler =
                 (CefAppHandler) ((appHandler_ == null) ? this : appHandler_);
         if (!handler.onBeforeTerminate()) dispose();
@@ -395,8 +396,6 @@ public class CefApp extends CefAppHandlerAdapter {
      * Shut down the context.
      */
     private final void shutdown() {
-        System.out.println("shutdown on " + Thread.currentThread());
-
         // Shutdown native CEF.
         N_Shutdown();
 

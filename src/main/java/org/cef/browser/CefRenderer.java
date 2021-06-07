@@ -45,8 +45,6 @@ public class CefRenderer {
         RenderSystem.enableTexture();
         texture_id_[0] = glGenTextures();
 
-        System.out.println("Cef renderer texture id: " + texture_id_[0]);
-
         RenderSystem.bindTexture(texture_id_[0]);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

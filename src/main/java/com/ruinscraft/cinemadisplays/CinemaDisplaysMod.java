@@ -9,15 +9,29 @@ import com.ruinscraft.cinemadisplays.block.render.ScreenBlockEntityRenderer;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
+import com.ruinscraft.cinemadisplays.video.VideoSettings;
+import com.ruinscraft.cinemadisplays.video.WindowFocusMuteThread;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cef.OS;
+
+import java.io.IOException;
 
 public class CinemaDisplaysMod implements ModInitializer {
 
+    public static final String MODID = "cinemadisplays";
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
+    private static CinemaDisplaysMod instance;
+
+    public static CinemaDisplaysMod getInstance() {
+        return instance;
+    }
+
     private ScreenManager screenManager;
     private PreviewScreenManager previewScreenManager;
-    private static CinemaDisplaysMod instance;
+    private VideoSettings videoSettings;
 
     public ScreenManager getScreenManager() {
         return screenManager;
@@ -27,24 +41,28 @@ public class CinemaDisplaysMod implements ModInitializer {
         return previewScreenManager;
     }
 
-    public static CinemaDisplaysMod getInstance() {
-        return instance;
+    public VideoSettings getVideoSettings() {
+        return videoSettings;
+    }
+
+    private static void initCefMac() {
+        if (OS.isMacintosh()) {
+            Util.getBootstrapExecutor().execute(() -> {
+                if (CefUtil.init()) {
+                    LOGGER.info("Chromium Embedded Framework initialized for macOS");
+                } else {
+                    LOGGER.warn("Could not initialize Chromium Embedded Framework for macOS");
+                }
+            });
+        }
     }
 
     @Override
     public void onInitialize() {
         instance = this;
 
-        // Temp hack for initializing CEF on macos
-        if (OS.isMacintosh()) {
-            Util.getBootstrapExecutor().execute(() -> {
-                if (CefUtil.init()) {
-                    System.out.println("Chromium Embedded Framework initialized");
-                } else {
-                    System.out.println("Could not initialize Chromium Embedded Framework");
-                }
-            });
-        }
+        // Hack for initializing CEF on macos
+        initCefMac();
 
         CefUtil.registerCefTick();
 
@@ -62,6 +80,16 @@ public class CinemaDisplaysMod implements ModInitializer {
 
         screenManager = new ScreenManager();
         previewScreenManager = new PreviewScreenManager();
+        videoSettings = new VideoSettings();
+
+        try {
+            videoSettings.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not load video settings.");
+        }
+
+        new WindowFocusMuteThread().start();
     }
 
 }

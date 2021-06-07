@@ -34,7 +34,7 @@ public class LoadHandler implements CefLoadHandler {
 
     @Override
     public void onLoadError(CefBrowser browser, CefFrame frame, ErrorCode errorCode, String errorText, String failedUrl) {
-        System.out.println("Load error: " + errorText);
+        CinemaDisplaysMod.LOGGER.warn("Load error: " + errorText);
     }
 
 }

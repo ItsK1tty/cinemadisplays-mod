@@ -4,6 +4,7 @@
 
 package org.cef.browser;
 
+import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import org.cef.CefClient;
 import org.cef.callback.CefDragData;
 import org.cef.handler.CefRenderHandler;
@@ -127,7 +128,7 @@ public class CefBrowserOsr extends CefBrowser_N implements CefRenderHandler {
 
         synchronized (paintData) {
             if (buffer.limit() > size)
-                System.out.println("Skipping browser frame, data is too heavy"); //TODO: Don't spam
+                CinemaDisplaysMod.LOGGER.info("Skipping browser frame, data is too heavy");
             else {
                 if (paintData.hasFrame) //The previous frame was not uploaded to GL texture, so we skip it and render this on instead
                     paintData.fullReRender = true;

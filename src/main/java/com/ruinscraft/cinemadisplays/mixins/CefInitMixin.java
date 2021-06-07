@@ -1,5 +1,6 @@
 package com.ruinscraft.cinemadisplays.mixins;
 
+import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import net.minecraft.client.main.Main;
 import org.cef.OS;
@@ -21,9 +22,9 @@ public class CefInitMixin {
     private static void cefInit(CallbackInfo info) {
         if (OS.isWindows() || OS.isLinux()) {
             if (CefUtil.init()) {
-                System.out.println("Chromium Embedded Framework initialized");
+                CinemaDisplaysMod.LOGGER.info("Chromium Embedded Framework initialized");
             } else {
-                System.out.println("Could not initialize Chromium Embedded Framework");
+                CinemaDisplaysMod.LOGGER.warn("Could not initialize Chromium Embedded Framework");
             }
         }
     }
