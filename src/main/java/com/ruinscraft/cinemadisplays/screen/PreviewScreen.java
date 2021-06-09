@@ -17,49 +17,53 @@
 
 package com.ruinscraft.cinemadisplays.screen;
 
+import com.ruinscraft.cinemadisplays.ImageUtil;
 import com.ruinscraft.cinemadisplays.block.PreviewScreenBlock;
-import com.ruinscraft.cinemadisplays.video.Video;
+import com.ruinscraft.cinemadisplays.video.VideoInfo;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
 public class PreviewScreen {
 
-    private static NativeImageBackedTexture noVideoPreviewScreenTexture;
-
-    private final UUID parentScreenId;
     private final String world;
     private final int x;
     private final int y;
     private final int z;
     private final String facing;
+    private final String staticTextureUrl;
+    private final String activeTextureUrl;
+
+    @Nullable
+    private VideoInfo videoInfo;
+
     private final transient BlockPos blockPos; // used as a cache for performance
-    private transient NativeImageBackedTexture previewScreenTexture;
-    private transient NativeImageBackedTexture thumbnailTexture;
-    private transient Video video;
     private transient boolean unregistered;
 
-    public PreviewScreen(UUID parentScreenId, String world, int x, int y, int z, String facing) {
-        this.parentScreenId = parentScreenId;
+    @Nullable
+    private transient NativeImageBackedTexture staticTexture;
+    @Nullable
+    private transient NativeImageBackedTexture activeTexture;
+    @Nullable
+    private transient NativeImageBackedTexture thumbnailTexture;
+
+    public PreviewScreen(String world, int x, int y, int z, String facing, String staticTextureUrl, String activeTextureUrl) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
         this.facing = facing;
-        blockPos = new BlockPos(new Vec3d(x, y, z));
-    }
+        this.staticTextureUrl = staticTextureUrl;
+        this.activeTextureUrl = activeTextureUrl;
 
-    public UUID getParentScreenId() {
-        return parentScreenId;
+        ImageUtil.fetchImageTextureFromUrl(staticTextureUrl).thenAccept(texture -> staticTexture = texture);
+        ImageUtil.fetchImageTextureFromUrl(activeTextureUrl).thenAccept(texture -> activeTexture = texture);
+
+        blockPos = new BlockPos(new Vec3d(x, y, z));
     }
 
     public String getWorld() {
@@ -82,86 +86,58 @@ public class PreviewScreen {
         return facing;
     }
 
-    public Video getVideo() {
-        return video;
+    public String getStaticTextureUrl() {
+        return staticTextureUrl;
     }
 
-    public void setVideo(Video video) {
-        this.video = video;
-
-        new Thread(() -> {
-            if (video == null) {
-                if (thumbnailTexture != null) {
-                    thumbnailTexture.close();
-                    thumbnailTexture = null;
-                }
-
-                // Download no video preview screen texture if not already downloaded
-                try {
-                    URL url = new URL("https://cdn.ruinscraft.com/media/images/flatscreen_bars.jpg");
-                    URLConnection conn = url.openConnection();
-                    conn.connect();
-
-                    try (InputStream is = url.openStream()) {
-                        if (previewScreenTexture != null) {
-                            previewScreenTexture.close();
-                        }
-
-                        previewScreenTexture = new NativeImageBackedTexture(NativeImage.read(is));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return;
-            }
-
-            // Download preview screen
-            try {
-                URL url = new URL(video.getPreviewScreenTextureUrl());
-                URLConnection conn = url.openConnection();
-                conn.connect();
-
-                try (InputStream is = url.openStream()) {
-                    if (previewScreenTexture != null) {
-                        previewScreenTexture.close();
-                    }
-
-                    previewScreenTexture = new NativeImageBackedTexture(NativeImage.read(is));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // Download video thumbnail
-            try {
-                URL url = new URL(video.getThumbnailUrl());
-                URLConnection conn = url.openConnection();
-                conn.connect();
-
-                try (InputStream is = url.openStream()) {
-                    if (thumbnailTexture != null) {
-                        thumbnailTexture.close();
-                    }
-
-                    thumbnailTexture = new NativeImageBackedTexture(NativeImage.read(is));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+    public String getActiveTextureUrl() {
+        return activeTextureUrl;
     }
 
-    public NativeImageBackedTexture getPreviewScreenTexture() {
-        return previewScreenTexture;
+    @Nullable
+    public VideoInfo getVideoInfo() {
+        return videoInfo;
     }
 
-    public NativeImageBackedTexture getThumbnailTexture() {
-        return thumbnailTexture;
+    public boolean hasVideoInfo() {
+        return videoInfo != null;
+    }
+
+    public void setVideoInfo(VideoInfo videoInfo) {
+        this.videoInfo = videoInfo;
+
+        if (videoInfo == null) {
+            setThumbnailTexture(null);
+        } else {
+            // Update thumbnail texture
+            ImageUtil.fetchImageTextureFromUrl(videoInfo.getThumbnailUrl()).thenAccept(this::setThumbnailTexture);
+        }
     }
 
     public BlockPos getBlockPos() {
         return blockPos;
+    }
+
+    @Nullable
+    public NativeImageBackedTexture getStaticTexture() {
+        return staticTexture;
+    }
+
+    @Nullable
+    public NativeImageBackedTexture getActiveTexture() {
+        return activeTexture;
+    }
+
+    @Nullable
+    public NativeImageBackedTexture getThumbnailTexture() {
+        return thumbnailTexture;
+    }
+
+    public void setThumbnailTexture(NativeImageBackedTexture thumbnailTexture) {
+        if (this.thumbnailTexture != null) {
+            this.thumbnailTexture.close();
+        }
+        this.thumbnailTexture = thumbnailTexture;
     }
 
     public void register() {
@@ -190,6 +166,10 @@ public class PreviewScreen {
 
     public void unregister() {
         unregistered = true;
+
+        if (staticTexture != null) staticTexture.close();
+        if (activeTexture != null) activeTexture.close();
+        if (thumbnailTexture != null) thumbnailTexture.close();
 
         if (MinecraftClient.getInstance().world != null) {
             MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());

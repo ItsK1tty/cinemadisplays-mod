@@ -19,43 +19,33 @@ package com.ruinscraft.cinemadisplays.screen;
 
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PreviewScreenManager {
 
-    private final List<PreviewScreen> previewScreens;
+    private Map<BlockPos, PreviewScreen> previewScreens;
 
     public PreviewScreenManager() {
-        previewScreens = new ArrayList<>();
+        previewScreens = new HashMap<>();
     }
 
     public void addPreviewScreen(PreviewScreen previewScreen) {
-        PreviewScreen previous = getPreviewScreen(previewScreen.getBlockPos());
-
-        if (previous != null) {
-            previous.unregister();
+        if (previewScreens.containsKey(previewScreen.getBlockPos())) {
+            previewScreens.remove(previewScreen.getBlockPos()).unregister();
         }
 
         previewScreen.register();
 
-        previewScreens.add(previewScreen);
+        previewScreens.put(previewScreen.getBlockPos(), previewScreen);
     }
 
     public PreviewScreen getPreviewScreen(BlockPos blockPos) {
-        for (PreviewScreen previewScreen : previewScreens) {
-            if (previewScreen.getBlockPos().equals(blockPos)) {
-                return previewScreen;
-            }
-        }
-        return null;
+        return previewScreens.get(blockPos);
     }
 
     public void unloadAll() {
-        for (PreviewScreen previewScreen : previewScreens) {
-            previewScreen.unregister();
-        }
-
+        previewScreens.values().forEach(PreviewScreen::unregister);
         previewScreens.clear();
     }
 

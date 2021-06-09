@@ -19,7 +19,6 @@ package com.ruinscraft.cinemadisplays.cef;
 
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.screen.Screen;
-import com.ruinscraft.cinemadisplays.video.Video;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefLoadHandler;
@@ -39,15 +38,12 @@ public class LoadHandler implements CefLoadHandler {
     public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
         Screen screen = CinemaDisplaysMod.getInstance().getScreenManager().getScreen(browser.getIdentifier());
 
-        if (screen != null) {
-            Video video = screen.getVideo();
-            video.start(frame);
+        screen.startVideo();
 
-            if (screen.isMuted()) {
-                video.setVolume(frame, 0f);
-            } else {
-                video.setVolume(frame, CinemaDisplaysMod.getInstance().getVideoSettings().getVolume());
-            }
+        if (screen.isMuted()) {
+            screen.setVideoVolume(0);
+        } else {
+            screen.setVideoVolume(CinemaDisplaysMod.getInstance().getVideoSettings().getVolume());
         }
     }
 

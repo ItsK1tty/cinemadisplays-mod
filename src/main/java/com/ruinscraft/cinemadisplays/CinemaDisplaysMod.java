@@ -26,8 +26,7 @@ import com.ruinscraft.cinemadisplays.block.render.ScreenBlockEntityRenderer;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
-import com.ruinscraft.cinemadisplays.video.VideoSettings;
-import com.ruinscraft.cinemadisplays.video.WindowFocusMuteThread;
+import com.ruinscraft.cinemadisplays.service.VideoServiceManager;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -46,9 +45,14 @@ public class CinemaDisplaysMod implements ModInitializer {
         return instance;
     }
 
+    private VideoServiceManager videoServiceManager;
     private ScreenManager screenManager;
     private PreviewScreenManager previewScreenManager;
     private VideoSettings videoSettings;
+
+    public VideoServiceManager getVideoServiceManager() {
+        return videoServiceManager;
+    }
 
     public ScreenManager getScreenManager() {
         return screenManager;
@@ -93,8 +97,9 @@ public class CinemaDisplaysMod implements ModInitializer {
         PreviewScreenBlockEntity.register();
         PreviewScreenBlockEntityRenderer.register();
 
-        NetworkUtil.init();
+        NetworkUtil.registerReceivers();
 
+        videoServiceManager = new VideoServiceManager();
         screenManager = new ScreenManager();
         previewScreenManager = new PreviewScreenManager();
         videoSettings = new VideoSettings();

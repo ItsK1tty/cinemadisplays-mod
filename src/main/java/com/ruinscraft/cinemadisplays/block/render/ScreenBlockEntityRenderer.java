@@ -47,16 +47,13 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
             return;
         }
 
-        // General setup
-        glDisable(GL_LIGHTING);
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
         RenderSystem.enableDepthTest();
+        glDisable(GL_LIGHTING);
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
 
-        // Texture rendering
+        // Render CEF texture (or black if nothing playing)
         {
             matrices.push();
             matrices.translate(1, 1, 0);
@@ -72,10 +69,8 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
             matrices.pop();
         }
 
-        // Cleanup
-        glEnable(GL_LIGHTING);
-        glEnable(GL_CULL_FACE);
         RenderSystem.disableDepthTest();
+        glEnable(GL_LIGHTING);
     }
 
     @Override

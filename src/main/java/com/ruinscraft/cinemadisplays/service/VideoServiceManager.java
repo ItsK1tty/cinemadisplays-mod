@@ -15,24 +15,29 @@
  * email: andersond@ruinscraft.com
  */
 
-package com.ruinscraft.cinemadisplays.video;
+package com.ruinscraft.cinemadisplays.service;
 
-public class Video {
+import java.util.HashMap;
+import java.util.Map;
 
-    private VideoInfo videoInfo;
-    private long startedAt;
+public class VideoServiceManager {
 
-    public Video(VideoInfo videoInfo, long startedAt) {
-        this.videoInfo = videoInfo;
-        this.startedAt = startedAt;
+    private Map<String, VideoService> registry;
+
+    public VideoServiceManager() {
+        registry = new HashMap<>();
     }
 
-    public VideoInfo getVideoInfo() {
-        return videoInfo;
+    public void register(VideoService videoService) {
+        registry.put(videoService.getName(), videoService);
     }
 
-    public long getStartedAt() {
-        return startedAt;
+    public void unregisterAll() {
+        registry.clear();
+    }
+
+    public VideoService getByName(String name) {
+        return registry.get(name);
     }
 
 }

@@ -26,7 +26,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class CefSettingsScreen extends Screen {
+public class VideoSettingsScreen extends Screen {
 
     private static final Identifier TEXTURE = new Identifier("cinemadisplays", "textures/gui/gui_generic_small.png");
 
@@ -36,7 +36,7 @@ public class CefSettingsScreen extends Screen {
     private int guiLeft;
     private int guiTop;
 
-    public CefSettingsScreen(Text title) {
+    public VideoSettingsScreen(Text title) {
         super(title);
     }
 

@@ -15,9 +15,8 @@
  * email: andersond@ruinscraft.com
  */
 
-package com.ruinscraft.cinemadisplays.video;
+package com.ruinscraft.cinemadisplays;
 
-import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.screen.Screen;
 import net.minecraft.client.MinecraftClient;
 
@@ -37,12 +36,12 @@ public class WindowFocusMuteThread extends Thread {
                 if (MinecraftClient.getInstance().isWindowFocused() && !previousState) {
                     // if currently focused and was previously not focused
                     for (Screen screen : CinemaDisplaysMod.getInstance().getScreenManager().getScreens()) {
-                        screen.setVolume(CinemaDisplaysMod.getInstance().getVideoSettings().getVolume());
+                        screen.setVideoVolume(CinemaDisplaysMod.getInstance().getVideoSettings().getVolume());
                     }
                 } else if (!MinecraftClient.getInstance().isWindowFocused() && previousState) {
                     // if not focused and was previous focused
                     for (Screen screen : CinemaDisplaysMod.getInstance().getScreenManager().getScreens()) {
-                        screen.setVolume(0f);
+                        screen.setVideoVolume(0f);
                     }
                 }
 

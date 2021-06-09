@@ -35,7 +35,7 @@ public class AdjustVolumeSlider extends SliderWidget {
     @Override
     protected void applyValue() {
         for (Screen screen : CinemaDisplaysMod.getInstance().getScreenManager().getScreens())
-            screen.setVolume((float) value);
+            screen.setVideoVolume((float) value);
         CinemaDisplaysMod.getInstance().getVideoSettings().setVolume((float) value);
     }
 

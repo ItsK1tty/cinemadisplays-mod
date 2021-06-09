@@ -19,7 +19,7 @@ package com.ruinscraft.cinemadisplays.screen;
 
 import com.ruinscraft.cinemadisplays.block.ScreenBlock;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
-import com.ruinscraft.cinemadisplays.video.*;
+import com.ruinscraft.cinemadisplays.video.Video;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -120,34 +120,10 @@ public class Screen {
         return browser != null;
     }
 
-    public void playVideo(Video video) {
+    public void loadVideo(Video video) {
         this.video = video;
-
         closeBrowser();
-
-        String startUrl;
-
-        if (video instanceof YouTubeVideo) {
-            startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/youtube.html";
-        } else if (video instanceof FileVideo) {
-            FileVideo fileVideo = (FileVideo) video;
-
-            if (fileVideo.isLoop()) {
-                startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/fileloop.html";
-            } else {
-                startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/file.html";
-            }
-        } else if (video instanceof TwitchVideo) {
-            startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/twitch.html";
-        } else if (video instanceof HLSVideo) {
-            startUrl = "https://cdn.ruinscraft.com/cinema/service/v1/hls.html";
-        } else {
-            startUrl = null;
-        }
-
-        if (startUrl != null) {
-            browser = CefUtil.createBrowser(startUrl, this);
-        }
+        browser = CefUtil.createBrowser(video.getVideoInfo().getVideoService().getUrl(), this);
     }
 
     public void closeBrowser() {
@@ -161,10 +137,55 @@ public class Screen {
         return video;
     }
 
-    public void setVolume(float volume) {
-        if (video != null && browser != null) {
-            video.setVolume(browser.getMainFrame(), volume);
+    public void setVideoVolume(float volume) {
+        if (browser != null && video != null) {
+            String js = video.getVideoInfo().getVideoService().getSetVolumeJs();
+
+            // 0-100 volume
+            if (js.contains("%d")) {
+                js = String.format(js, (int) (volume * 100));
+            }
+
+            // 0.00-1.00 volume
+            else if (js.contains("%f")) {
+                js = String.format(js, volume);
+            }
+
+            browser.getMainFrame().executeJavaScript(js, browser.getURL(), 0);
         }
+    }
+
+    public void startVideo() {
+        if (browser != null && video != null) {
+            String startJs = video.getVideoInfo().getVideoService().getStartJs();
+
+            if (startJs.contains("%s") && startJs.contains("%b")) {
+                startJs = String.format(startJs, video.getVideoInfo().getId(), video.getVideoInfo().isLivestream());
+            } else if (startJs.contains("%s")) {
+                startJs = String.format(startJs, video.getVideoInfo().getId());
+            }
+
+            browser.getMainFrame().executeJavaScript(startJs, browser.getURL(), 0);
+
+            // Seek to current time
+            if (!video.getVideoInfo().isLivestream()) {
+                long millisSinceStart = System.currentTimeMillis() - video.getStartedAt();
+                long secondsSinceStart = millisSinceStart / 1000;
+                if (secondsSinceStart < video.getVideoInfo().getDurationSeconds()) {
+                    String seekJs = video.getVideoInfo().getVideoService().getSeekJs();
+
+                    if (seekJs.contains("%d")) {
+                        seekJs = String.format(seekJs, secondsSinceStart);
+                    }
+
+                    browser.getMainFrame().executeJavaScript(seekJs, browser.getURL(), 0);
+                }
+            }
+        }
+    }
+
+    public void seekVideo(int seconds) {
+        // TODO:
     }
 
     public BlockPos getBlockPos() {
