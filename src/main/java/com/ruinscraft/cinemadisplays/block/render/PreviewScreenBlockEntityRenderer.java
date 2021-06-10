@@ -34,8 +34,6 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
-import static org.lwjgl.opengl.GL11.*;
-
 public class PreviewScreenBlockEntityRenderer extends BlockEntityRenderer<PreviewScreenBlockEntity> {
 
     public PreviewScreenBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
@@ -49,7 +47,6 @@ public class PreviewScreenBlockEntityRenderer extends BlockEntityRenderer<Previe
         if (previewScreen == null) return;
 
         RenderSystem.enableDepthTest();
-        glDisable(GL_LIGHTING);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
@@ -117,7 +114,6 @@ public class PreviewScreenBlockEntityRenderer extends BlockEntityRenderer<Previe
         // Render text end
 
         RenderSystem.disableDepthTest();
-        glEnable(GL_LIGHTING);
     }
 
     public static void register() {

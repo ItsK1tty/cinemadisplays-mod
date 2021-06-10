@@ -30,8 +30,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 
-import static org.lwjgl.opengl.GL11.*;
-
 public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEntity> {
 
     public ScreenBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
@@ -48,7 +46,6 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         }
 
         RenderSystem.enableDepthTest();
-        glDisable(GL_LIGHTING);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
@@ -70,7 +67,6 @@ public class ScreenBlockEntityRenderer extends BlockEntityRenderer<ScreenBlockEn
         }
 
         RenderSystem.disableDepthTest();
-        glEnable(GL_LIGHTING);
     }
 
     @Override
