@@ -41,7 +41,7 @@ import java.util.UUID;
 public final class NetworkUtil {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
-    private static final Identifier CHANNEL_REGISTER_SERVICES = new Identifier(CinemaDisplaysMod.MODID, "register_services");
+    private static final Identifier CHANNEL_SERVICES = new Identifier(CinemaDisplaysMod.MODID, "services");
     private static final Identifier CHANNEL_SCREENS = new Identifier(CinemaDisplaysMod.MODID, "screens");
     private static final Identifier CHANNEL_LOAD_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "load_screen");
     private static final Identifier CHANNEL_UNLOAD_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "unload_screen");
@@ -56,7 +56,7 @@ public final class NetworkUtil {
     }
 
     public static void registerReceivers() {
-        ClientPlayNetworking.registerGlobalReceiver(CHANNEL_REGISTER_SERVICES, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(CHANNEL_SERVICES, (client, handler, buf, responseSender) -> {
             String videoServicesJsonRaw = readString(buf);
 
             client.submit(() -> {
