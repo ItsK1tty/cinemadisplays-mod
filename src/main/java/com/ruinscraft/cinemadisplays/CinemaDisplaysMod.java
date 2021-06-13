@@ -27,6 +27,7 @@ import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
 import com.ruinscraft.cinemadisplays.service.VideoServiceManager;
+import com.ruinscraft.cinemadisplays.video.list.VideoListManager;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +50,7 @@ public class CinemaDisplaysMod implements ModInitializer {
     private ScreenManager screenManager;
     private PreviewScreenManager previewScreenManager;
     private VideoSettings videoSettings;
+    private VideoListManager videoListManager;
 
     public VideoServiceManager getVideoServiceManager() {
         return videoServiceManager;
@@ -64,6 +66,10 @@ public class CinemaDisplaysMod implements ModInitializer {
 
     public VideoSettings getVideoSettings() {
         return videoSettings;
+    }
+
+    public VideoListManager getVideoListManager() {
+        return videoListManager;
     }
 
     private static void initCefMac() {
@@ -103,6 +109,7 @@ public class CinemaDisplaysMod implements ModInitializer {
         screenManager = new ScreenManager();
         previewScreenManager = new PreviewScreenManager();
         videoSettings = new VideoSettings();
+        videoListManager = new VideoListManager();
 
         try {
             videoSettings.load();

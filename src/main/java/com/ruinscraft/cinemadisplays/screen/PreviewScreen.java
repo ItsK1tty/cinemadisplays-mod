@@ -106,7 +106,7 @@ public class PreviewScreen {
     public void setVideoInfo(VideoInfo videoInfo) {
         this.videoInfo = videoInfo;
 
-        if (videoInfo == null) {
+        if (videoInfo == null || videoInfo.getThumbnailUrl() == null) {
             setThumbnailTexture(null);
         } else {
             // Update thumbnail texture

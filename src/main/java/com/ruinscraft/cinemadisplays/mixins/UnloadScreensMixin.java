@@ -39,6 +39,8 @@ public class UnloadScreensMixin {
         CinemaDisplaysMod.getInstance().getScreenManager().unloadAll();
         // Unload preview screens
         CinemaDisplaysMod.getInstance().getPreviewScreenManager().unloadAll();
+        // Unregister services
+        CinemaDisplaysMod.getInstance().getVideoServiceManager().unregisterAll();
     }
 
 }

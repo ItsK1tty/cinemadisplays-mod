@@ -21,6 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ruinscraft.cinemadisplays.gui.VideoHistoryScreen;
 import com.ruinscraft.cinemadisplays.gui.VideoSettingsScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
@@ -28,9 +29,10 @@ import com.ruinscraft.cinemadisplays.screen.Screen;
 import com.ruinscraft.cinemadisplays.service.VideoService;
 import com.ruinscraft.cinemadisplays.video.Video;
 import com.ruinscraft.cinemadisplays.video.VideoInfo;
+import com.ruinscraft.cinemadisplays.video.list.VideoList;
+import com.ruinscraft.cinemadisplays.video.list.VideoListEntry;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.nio.charset.StandardCharsets;
@@ -47,6 +49,10 @@ public final class NetworkUtil {
     private static final Identifier CHANNEL_UNLOAD_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "unload_screen");
     private static final Identifier CHANNEL_UPDATE_PREVIEW_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "update_preview_screen");
     private static final Identifier CHANNEL_OPEN_SETTINGS_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "open_settings_screen");
+    private static final Identifier CHANNEL_OPEN_HISTORY_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "open_history_screen");
+    private static final Identifier CHANNEL_OPEN_PLAYLISTS_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "open_playlists_screen");
+    private static final Identifier CHANNEL_VIDEO_LIST_HISTORY_SPLIT = new Identifier(CinemaDisplaysMod.MODID, "video_list_history_split");
+    private static final Identifier CHANNEL_VIDEO_LIST_PLAYLIST_SPLIT = new Identifier(CinemaDisplaysMod.MODID, "video_list_playlist_split");
 
     private static String readString(PacketByteBuf buf) {
         int len = buf.readShort();
@@ -75,16 +81,13 @@ public final class NetworkUtil {
 
             client.submit(() -> {
                 try {
-                    List<Screen> screens = new ArrayList<>();
-
                     JsonObject root = JSON_PARSER.parse(screensJsonRaw).getAsJsonObject();
                     JsonArray screensArray = root.getAsJsonArray("screens");
-
+                    List<Screen> screens = new ArrayList<>();
                     for (JsonElement jsonElement : screensArray) {
                         JsonObject screenJson = jsonElement.getAsJsonObject();
                         screens.add(deserializeScreen(screenJson));
                     }
-
                     CinemaDisplaysMod.getInstance().getScreenManager().setScreens(screens);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -143,8 +146,26 @@ public final class NetworkUtil {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_OPEN_SETTINGS_SCREEN, (client, handler, buf, responseSender) -> {
+            client.submit(() -> client.openScreen(new VideoSettingsScreen()));
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(CHANNEL_OPEN_HISTORY_SCREEN, (client, handler, buf, responseSender) -> {
+            client.submit(() -> client.openScreen(new VideoHistoryScreen()));
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(CHANNEL_VIDEO_LIST_HISTORY_SPLIT, (client, handler, buf, responseSender) -> {
+            String videoHistoryJsonRaw = readString(buf);
+
             client.submit(() -> {
-                client.openScreen(new VideoSettingsScreen(Text.of("Video Settings")));
+                JsonObject root = JSON_PARSER.parse(videoHistoryJsonRaw).getAsJsonObject();
+                JsonArray historyArray = root.get("entries").getAsJsonArray();
+                List<VideoListEntry> entries = new ArrayList<>();
+                for (JsonElement jsonElement : historyArray) {
+                    JsonObject videoListEntryJson = jsonElement.getAsJsonObject();
+                    entries.add(deserializeVideoListEntry(videoListEntryJson));
+                }
+                VideoList videoList = new VideoList(entries);
+                CinemaDisplaysMod.getInstance().getVideoListManager().getHistory().merge(videoList);
             });
         });
     }
@@ -189,12 +210,16 @@ public final class NetworkUtil {
     private static VideoInfo deserializeVideoInfo(JsonObject jsonObject) {
         String serviceType = jsonObject.get("service_type").getAsString();
         VideoService videoService = CinemaDisplaysMod.getInstance().getVideoServiceManager().getByName(serviceType);
-        if (videoService == null)
-            return null;
+        if (videoService == null) return null;
         String id = jsonObject.get("id").getAsString();
         String title = jsonObject.get("title").getAsString();
         String poster = jsonObject.get("poster").getAsString();
-        String thumbnailUrl = jsonObject.get("thumbnail_url").getAsString();
+        final String thumbnailUrl;
+        if (jsonObject.has("thumbnail_url")) {
+            thumbnailUrl = jsonObject.get("thumbnail_url").getAsString();
+        } else {
+            thumbnailUrl = null;
+        }
         long durationSeconds = jsonObject.get("duration_seconds").getAsLong();
         VideoInfo videoInfo = new VideoInfo(videoService, id);
         videoInfo.setTitle(title);
@@ -218,6 +243,14 @@ public final class NetworkUtil {
             previewScreen.setVideoInfo(videoInfo);
         }
         return previewScreen;
+    }
+
+    private static VideoListEntry deserializeVideoListEntry(JsonObject videoListEntryJson) {
+        VideoInfo videoInfo = deserializeVideoInfo(videoListEntryJson.get("video_info").getAsJsonObject());
+        if (videoInfo == null) return null;
+        long lastRequested = videoListEntryJson.get("last_requested").getAsLong();
+        int timesRequested = videoListEntryJson.get("times_requested").getAsInt();
+        return new VideoListEntry(videoInfo, lastRequested, timesRequested);
     }
 
 }

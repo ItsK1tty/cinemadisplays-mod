@@ -27,11 +27,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class CheckBoxWhiteText extends CheckboxWidget {
+public class CheckBoxWhiteTextWidget extends CheckboxWidget {
 
     private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
 
-    public CheckBoxWhiteText(int x, int y, int width, int height, Text message) {
+    public CheckBoxWhiteTextWidget(int x, int y, int width, int height, Text message) {
         super(x, y, width, height, message, CinemaDisplaysMod.getInstance().getVideoSettings().isMuteWhenAltTabbed());
     }
 

@@ -17,7 +17,6 @@
 
 package com.ruinscraft.cinemadisplays;
 
-import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import net.minecraft.client.MinecraftClient;
 
 import java.io.File;

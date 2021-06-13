@@ -22,9 +22,9 @@ import com.ruinscraft.cinemadisplays.screen.Screen;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
-public class AdjustVolumeSlider extends SliderWidget {
+public class AdjustVolumeSliderWidget extends SliderWidget {
 
-    public AdjustVolumeSlider(int x, int y, int width, int height) {
+    public AdjustVolumeSliderWidget(int x, int y, int width, int height) {
         super(x, y, width, height, Text.of("Volume"), CinemaDisplaysMod.getInstance().getVideoSettings().getVolume());
     }
 

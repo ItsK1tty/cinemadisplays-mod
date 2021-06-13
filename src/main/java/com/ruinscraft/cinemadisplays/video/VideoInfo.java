@@ -18,13 +18,17 @@
 package com.ruinscraft.cinemadisplays.video;
 
 import com.ruinscraft.cinemadisplays.service.VideoService;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class VideoInfo {
 
-    private VideoService videoService;
-    private String id;
+    private final VideoService videoService;
+    private final String id;
     private String title;
     private String poster;
+    @Nullable
     private String thumbnailUrl;
     private long durationSeconds;
 
@@ -50,8 +54,8 @@ public class VideoInfo {
     }
 
     public String getTitleShort() {
-        if (title.length() > 23) {
-            return title.substring(0, 20) + "...";
+        if (title.length() > 30) {
+            return title.substring(0, 27) + "...";
         } else {
             return title;
         }
@@ -65,11 +69,12 @@ public class VideoInfo {
         this.poster = poster;
     }
 
+    @Nullable
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
-    public void setThumbnailUrl(String thumbnailUrl) {
+    public void setThumbnailUrl(@Nullable String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
     }
 
@@ -83,6 +88,20 @@ public class VideoInfo {
 
     public boolean isLivestream() {
         return durationSeconds == 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof VideoInfo)) {
+            return false;
+        }
+        VideoInfo videoInfo = (VideoInfo) o;
+        return videoService == videoInfo.videoService && Objects.equals(id, videoInfo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(videoService, id);
     }
 
 }
