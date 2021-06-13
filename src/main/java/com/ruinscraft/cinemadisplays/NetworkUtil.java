@@ -55,9 +55,12 @@ public final class NetworkUtil {
     private static final Identifier CHANNEL_OPEN_PLAYLISTS_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "open_playlists_screen");
     private static final Identifier CHANNEL_VIDEO_LIST_HISTORY_SPLIT = new Identifier(CinemaDisplaysMod.MODID, "video_list_history_split");
     private static final Identifier CHANNEL_VIDEO_LIST_PLAYLIST_SPLIT = new Identifier(CinemaDisplaysMod.MODID, "video_list_playlist_split");
+    private static final Identifier CHANNEL_VIDEO_QUEUE_STATE = new Identifier(CinemaDisplaysMod.MODID, "video_queue_state");
     /* OUTGOING */
     private static final Identifier CHANNEL_VIDEO_REQUEST = new Identifier(CinemaDisplaysMod.MODID, "video_request");
     private static final Identifier CHANNEL_VIDEO_HISTORY_REMOVE = new Identifier(CinemaDisplaysMod.MODID, "video_history_remove");
+    private static final Identifier CHANNEL_VIDEO_QUEUE_VOTE = new Identifier(CinemaDisplaysMod.MODID, "video_queue_vote");
+    private static final Identifier CHANNEL_VIDEO_QUEUE_REMOVE = new Identifier(CinemaDisplaysMod.MODID, "video_queue_remove");
 
     private static String readString(PacketByteBuf buf) {
         int len = buf.readShort();

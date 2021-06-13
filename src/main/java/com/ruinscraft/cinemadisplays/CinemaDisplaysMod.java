@@ -24,6 +24,7 @@ import com.ruinscraft.cinemadisplays.block.ScreenBlockEntity;
 import com.ruinscraft.cinemadisplays.block.render.PreviewScreenBlockEntityRenderer;
 import com.ruinscraft.cinemadisplays.block.render.ScreenBlockEntityRenderer;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
+import com.ruinscraft.cinemadisplays.gui.VideoQueueScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
 import com.ruinscraft.cinemadisplays.screen.ScreenManager;
 import com.ruinscraft.cinemadisplays.service.VideoServiceManager;
@@ -119,6 +120,8 @@ public class CinemaDisplaysMod implements ModInitializer {
         }
 
         new WindowFocusMuteThread().start();
+
+        VideoQueueScreen.registerKeyInput();
     }
 
 }
