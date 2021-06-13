@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class VideoList {
 
-    private Map<VideoInfo, VideoListEntry> videos;
+    private final Map<VideoInfo, VideoListEntry> videos;
 
     public VideoList(List<VideoListEntry> videos) {
         this.videos = new HashMap<>();
@@ -42,8 +42,16 @@ public class VideoList {
         return videos.values().stream().sorted().collect(Collectors.toList());
     }
 
+    public void reset() {
+        videos.clear();
+    }
+
     public void merge(VideoList other) {
-        other.videos.forEach((videoInfo, entry) -> this.videos.put(videoInfo, entry));
+        other.videos.forEach(this.videos::put);
+    }
+
+    public void remove(VideoInfo videoInfo) {
+        videos.remove(videoInfo);
     }
 
 }

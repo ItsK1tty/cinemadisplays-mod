@@ -38,4 +38,9 @@ public class VideoListManager {
         return playlists.get(name);
     }
 
+    public void reset() {
+        history.reset();
+        playlists.forEach((s, videoList) -> videoList.reset());
+    }
+
 }

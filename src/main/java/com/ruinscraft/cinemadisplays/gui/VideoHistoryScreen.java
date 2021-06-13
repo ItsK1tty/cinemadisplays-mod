@@ -18,6 +18,7 @@
 package com.ruinscraft.cinemadisplays.gui;
 
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
+import com.ruinscraft.cinemadisplays.gui.widget.VideoHistoryListWidget;
 import com.ruinscraft.cinemadisplays.gui.widget.VideoListWidget;
 import com.ruinscraft.cinemadisplays.video.list.VideoList;
 import net.minecraft.client.gui.screen.Screen;
@@ -29,7 +30,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.Locale;
-import java.util.function.Supplier;
 
 public class VideoHistoryScreen extends Screen {
 
@@ -37,7 +37,7 @@ public class VideoHistoryScreen extends Screen {
     protected static final Text SEARCH_TEXT = (new TranslatableText("gui.socialInteractions.search_hint")).formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 
     private TextFieldWidget searchBox;
-    private VideoListWidget videoList;
+    private VideoListWidget videoListWidget;
     private String currentSearch = "";
 
     public VideoHistoryScreen() {
@@ -56,9 +56,8 @@ public class VideoHistoryScreen extends Screen {
         searchBox.setText(string);
         searchBox.setChangedListener(this::onSearchChange);
         children.add(searchBox);
-
-        Supplier<VideoList> videoListSupplier = () -> CinemaDisplaysMod.getInstance().getVideoListManager().getHistory();
-        videoList = new VideoListWidget(videoListSupplier, client, this.width, this.height, 88, this.method_31361(), 19);
+        VideoList videoList = CinemaDisplaysMod.getInstance().getVideoListManager().getHistory();
+        videoListWidget = new VideoHistoryListWidget(videoList, client, this.width, this.height, 88, this.method_31361(), 19);
     }
 
     @Override
@@ -90,7 +89,7 @@ public class VideoHistoryScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        videoList.render(matrices, mouseX, mouseY, delta);
+        videoListWidget.render(matrices, mouseX, mouseY, delta);
         if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {
             drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_TEXT, this.searchBox.x, this.searchBox.y, -1);
         } else {
@@ -118,7 +117,7 @@ public class VideoHistoryScreen extends Screen {
     private void onSearchChange(String currentSearch) {
         currentSearch = currentSearch.toLowerCase(Locale.ROOT);
         if (!currentSearch.equals(this.currentSearch)) {
-            videoList.setSearch(currentSearch);
+            videoListWidget.setSearch(currentSearch);
             this.currentSearch = currentSearch;
         }
     }
@@ -129,7 +128,7 @@ public class VideoHistoryScreen extends Screen {
             this.searchBox.mouseClicked(mouseX, mouseY, button);
         }
 
-        return super.mouseClicked(mouseX, mouseY, button) || videoList.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button) || videoListWidget.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class VideoHistoryScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        videoList.mouseScrolled(mouseX, mouseY, amount);
+        videoListWidget.mouseScrolled(mouseX, mouseY, amount);
         return super.mouseScrolled(mouseX, mouseY, amount);
     }
 

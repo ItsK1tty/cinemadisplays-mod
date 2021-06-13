@@ -66,6 +66,16 @@ public class ScreenManager {
         return null;
     }
 
+    public boolean hasActiveScreen() {
+        for (Screen screen : screens.values()) {
+            if (screen.hasBrowser()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void unloadAll() {
         for (Screen screen : screens.values()) {
             screen.closeBrowser();

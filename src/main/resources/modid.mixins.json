@@ -7,7 +7,8 @@
   ],
   "client": [
     "CefInitMixin",
-    "UnloadScreensMixin"
+    "UnloadScreensMixin",
+    "CrossHairMixin"
   ],
   "injectors": {
     "defaultRequire": 1

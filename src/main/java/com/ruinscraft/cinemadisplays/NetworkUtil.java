@@ -31,6 +31,7 @@ import com.ruinscraft.cinemadisplays.video.Video;
 import com.ruinscraft.cinemadisplays.video.VideoInfo;
 import com.ruinscraft.cinemadisplays.video.list.VideoList;
 import com.ruinscraft.cinemadisplays.video.list.VideoListEntry;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -43,6 +44,7 @@ import java.util.UUID;
 public final class NetworkUtil {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
+    /* INCOMING */
     private static final Identifier CHANNEL_SERVICES = new Identifier(CinemaDisplaysMod.MODID, "services");
     private static final Identifier CHANNEL_SCREENS = new Identifier(CinemaDisplaysMod.MODID, "screens");
     private static final Identifier CHANNEL_LOAD_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "load_screen");
@@ -53,12 +55,20 @@ public final class NetworkUtil {
     private static final Identifier CHANNEL_OPEN_PLAYLISTS_SCREEN = new Identifier(CinemaDisplaysMod.MODID, "open_playlists_screen");
     private static final Identifier CHANNEL_VIDEO_LIST_HISTORY_SPLIT = new Identifier(CinemaDisplaysMod.MODID, "video_list_history_split");
     private static final Identifier CHANNEL_VIDEO_LIST_PLAYLIST_SPLIT = new Identifier(CinemaDisplaysMod.MODID, "video_list_playlist_split");
+    /* OUTGOING */
+    private static final Identifier CHANNEL_VIDEO_REQUEST = new Identifier(CinemaDisplaysMod.MODID, "video_request");
+    private static final Identifier CHANNEL_VIDEO_HISTORY_REMOVE = new Identifier(CinemaDisplaysMod.MODID, "video_history_remove");
 
     private static String readString(PacketByteBuf buf) {
         int len = buf.readShort();
         byte[] data = new byte[len];
         buf.readBytes(data, 0, len);
         return new String(data, StandardCharsets.UTF_8);
+    }
+
+    private static void writeString(String string, PacketByteBuf buf) {
+        buf.writeShort(string.length());
+        buf.writeBytes(string.getBytes(StandardCharsets.UTF_8));
     }
 
     public static void registerReceivers() {
@@ -170,6 +180,20 @@ public final class NetworkUtil {
         });
     }
 
+    public static void sendVideoRequestPacket(VideoInfo videoInfo) {
+        JsonObject videoInfoJson = serializeVideoInfo(videoInfo);
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        writeString(videoInfoJson.toString(), buf);
+        ClientPlayNetworking.send(CHANNEL_VIDEO_REQUEST, buf);
+    }
+
+    public static void sendDeleteHistoryPacket(VideoInfo videoInfo) {
+        JsonObject videoInfoJson = serializeVideoInfo(videoInfo);
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        writeString(videoInfoJson.toString(), buf);
+        ClientPlayNetworking.send(CHANNEL_VIDEO_HISTORY_REMOVE, buf);
+    }
+
     private static VideoService deserializeService(JsonObject videoServiceJson) {
         String name = videoServiceJson.get("name").getAsString();
         String url = videoServiceJson.get("url").getAsString();
@@ -251,6 +275,19 @@ public final class NetworkUtil {
         long lastRequested = videoListEntryJson.get("last_requested").getAsLong();
         int timesRequested = videoListEntryJson.get("times_requested").getAsInt();
         return new VideoListEntry(videoInfo, lastRequested, timesRequested);
+    }
+
+    private static JsonObject serializeVideoInfo(VideoInfo videoInfo) {
+        JsonObject videoInfoJson = new JsonObject();
+        videoInfoJson.addProperty("service_type", videoInfo.getVideoService().getName());
+        videoInfoJson.addProperty("id", videoInfo.getId());
+        videoInfoJson.addProperty("title", videoInfo.getTitle());
+        videoInfoJson.addProperty("poster", videoInfo.getPoster());
+        if (videoInfo.getThumbnailUrl() != null) {
+            videoInfoJson.addProperty("thumbnail_url", videoInfo.getThumbnailUrl());
+        }
+        videoInfoJson.addProperty("duration_seconds", videoInfo.getDurationSeconds());
+        return videoInfoJson;
     }
 
 }
