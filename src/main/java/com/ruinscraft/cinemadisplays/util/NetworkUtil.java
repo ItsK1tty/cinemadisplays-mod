@@ -60,24 +60,27 @@ public final class NetworkUtil {
 
     public static void registerReceivers() {
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_SERVICES, (client, handler, buf, responseSender) -> {
-            for (int i = 0; i < buf.readInt(); i++)
+            int length = buf.readInt();
+            for (int i = 0; i < length; i++)
                 CD.getVideoServiceManager().register(new VideoService().fromBytes(buf));
         });
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_SCREENS, (client, handler, buf, responseSender) -> {
-            for (int i = 0; i < buf.readInt(); i++)
+            int length = buf.readInt();
+            for (int i = 0; i < length; i++)
                 CD.getScreenManager().registerScreen(new Screen().fromBytes(buf));
         });
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_LOAD_SCREEN, (client, handler, buf, responseSender) -> {
             BlockPos pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
             Screen screen = CD.getScreenManager().getScreen(pos);
             if (screen == null) return;
-            screen.loadVideo(new Video().fromBytes(buf));
+            Video video = new Video().fromBytes(buf);
+            client.submit(() -> screen.loadVideo(video));
         });
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_UNLOAD_SCREEN, (client, handler, buf, responseSender) -> {
             BlockPos pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
             Screen screen = CD.getScreenManager().getScreen(pos);
             if (screen == null) return;
-            screen.closeBrowser();
+            client.submit(screen::closeBrowser);
         });
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_UPDATE_PREVIEW_SCREEN, (client, handler, buf, responseSender) -> {
             PreviewScreenManager manager = CD.getPreviewScreenManager();
@@ -97,7 +100,8 @@ public final class NetworkUtil {
         });
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_VIDEO_LIST_HISTORY_SPLIT, (client, handler, buf, responseSender) -> {
             List<VideoListEntry> entries = new ArrayList<>();
-            for (int i = 0; i < buf.readInt(); i++)
+            int length = buf.readInt();
+            for (int i = 0; i < length; i++)
                 entries.add(new VideoListEntry().fromBytes(buf));
             CD.getVideoListManager().getHistory().merge(new VideoList(entries));
         });

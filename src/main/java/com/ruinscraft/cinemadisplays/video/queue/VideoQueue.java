@@ -53,7 +53,8 @@ public class VideoQueue implements PacketByteBufSerializable<VideoQueue> {
     @Override
     public VideoQueue fromBytes(PacketByteBuf buf) {
         List<QueuedVideo> videos = new ArrayList<>();
-        for (int i = 0; i < buf.readInt(); i++) {
+        int length = buf.readInt();
+        for (int i = 0; i < length; i++) {
             VideoInfo videoInfo = new VideoInfo().fromBytes(buf);
             int score = buf.readInt();
             int clientState = buf.readInt();
