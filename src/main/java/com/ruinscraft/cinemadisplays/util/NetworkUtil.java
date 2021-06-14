@@ -19,6 +19,7 @@ package com.ruinscraft.cinemadisplays.util;
 
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.gui.VideoHistoryScreen;
+import com.ruinscraft.cinemadisplays.gui.VideoQueueScreen;
 import com.ruinscraft.cinemadisplays.gui.VideoSettingsScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreen;
 import com.ruinscraft.cinemadisplays.screen.PreviewScreenManager;
@@ -110,6 +111,12 @@ public final class NetworkUtil {
         });
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_VIDEO_QUEUE_STATE, (client, handler, buf, responseSender) -> {
             CD.getVideoQueue().fromBytes(buf);
+            client.submit(() -> {
+                if (client.currentScreen instanceof VideoQueueScreen) {
+                    VideoQueueScreen videoQueueScreen = (VideoQueueScreen) client.currentScreen;
+                    videoQueueScreen.videoQueueWidget.update();
+                }
+            });
         });
     }
 
