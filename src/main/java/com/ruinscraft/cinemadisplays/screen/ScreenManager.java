@@ -19,11 +19,13 @@ package com.ruinscraft.cinemadisplays.screen;
 
 import net.minecraft.util.math.BlockPos;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScreenManager {
 
-    private final Map<UUID, Screen> screens;
+    private final Map<BlockPos, Screen> screens;
 
     public ScreenManager() {
         screens = new HashMap<>();
@@ -33,24 +35,18 @@ public class ScreenManager {
         return screens.values();
     }
 
-    public void setScreens(List<Screen> screens) {
-        // Unregister any old screens
-        for (Screen screen : this.screens.values()) {
-            screen.unregister();
-            screen.closeBrowser();
+    public void registerScreen(Screen screen) {
+        if (screens.containsKey(screen.getPos())) {
+            Screen old = screens.get(screen.getPos());
+            old.unregister();
+            old.closeBrowser();
         }
 
-        this.screens.clear();
-
-        // Register new screens
-        for (Screen screen : screens) {
-            screen.register();
-            this.screens.put(screen.getId(), screen);
-        }
+        screens.put(screen.getPos(), screen);
     }
 
-    public Screen getScreen(UUID screenId) {
-        return screens.get(screenId);
+    public Screen getScreen(BlockPos pos) {
+        return screens.get(pos);
     }
 
     // Used for CefClient LoadHandler
@@ -91,16 +87,6 @@ public class ScreenManager {
                 screen.getBrowser().update();
             }
         }
-    }
-
-    public Screen getScreen(BlockPos blockPos) {
-        for (Screen screen : screens.values()) {
-            if (screen.getBlockPos().equals(blockPos)) {
-                return screen;
-            }
-        }
-
-        return null;
     }
 
 }

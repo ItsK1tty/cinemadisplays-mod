@@ -18,25 +18,18 @@
 package com.ruinscraft.cinemadisplays.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.ruinscraft.cinemadisplays.video.list.VideoList;
-import com.ruinscraft.cinemadisplays.video.list.VideoListEntry;
+import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Locale;
+import java.util.stream.Collectors;
 
-public abstract class VideoListWidget extends ElementListWidget<VideoListWidgetEntry> {
+public class VideoQueueWidget extends ElementListWidget<VideoQueueWidgetEntry> {
 
-    protected final VideoList videoList;
-    @Nullable
-    private String search;
-
-    public VideoListWidget(VideoList videoList, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+    public VideoQueueWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         super(client, width, height, top, bottom, itemHeight);
-        this.videoList = videoList;
         this.method_31322(false); // Disables dirt texture
         this.method_31323(false); // Disables dirt texture
         update();
@@ -50,25 +43,17 @@ public abstract class VideoListWidget extends ElementListWidget<VideoListWidgetE
         RenderSystem.disableScissor();
     }
 
-    public void update() {
-        List<VideoListEntry> entries = videoList.getVideos();
-        if (search != null)
-            entries.removeIf(entry -> !entry.getVideoInfo().getTitle().toLowerCase(Locale.ROOT).contains(search));
-        replaceEntries(getWidgetEntries(entries));
-    }
-
-    public void setSearch(@Nullable String search) {
-        this.search = search;
-        update();
-    }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        children().forEach(widgetEntry -> widgetEntry.mouseClicked(mouseX, mouseY, button));
-        update();
+        children().forEach(child -> child.mouseClicked(mouseX, mouseY, button));
         return true;
     }
 
-    protected abstract List<VideoListWidgetEntry> getWidgetEntries(List<VideoListEntry> entries);
+    public void update() {
+        List<VideoQueueWidgetEntry> entries = CinemaDisplaysMod.getInstance().getVideoQueue().getVideos().stream()
+                .map(entry -> new VideoQueueWidgetEntry(entry, client))
+                .collect(Collectors.toList());
+        replaceEntries(entries);
+    }
 
 }

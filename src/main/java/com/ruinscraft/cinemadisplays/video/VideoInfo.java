@@ -17,24 +17,30 @@
 
 package com.ruinscraft.cinemadisplays.video;
 
+import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
+import com.ruinscraft.cinemadisplays.buffer.PacketByteBufSerializable;
 import com.ruinscraft.cinemadisplays.service.VideoService;
+import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class VideoInfo {
+public class VideoInfo implements PacketByteBufSerializable<VideoInfo> {
 
-    private final VideoService videoService;
-    private final String id;
+    private VideoService videoService;
+    private String id;
     private String title;
     private String poster;
-    @Nullable
     private String thumbnailUrl;
     private long durationSeconds;
 
     public VideoInfo(VideoService videoService, String id) {
         this.videoService = videoService;
         this.id = id;
+    }
+
+    public VideoInfo() {
+
     }
 
     public VideoService getVideoService() {
@@ -69,7 +75,6 @@ public class VideoInfo {
         this.poster = poster;
     }
 
-    @Nullable
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
@@ -102,6 +107,28 @@ public class VideoInfo {
     @Override
     public int hashCode() {
         return Objects.hash(videoService, id);
+    }
+
+    @Override
+    public VideoInfo fromBytes(PacketByteBuf buf) {
+        videoService = CinemaDisplaysMod.getInstance().getVideoServiceManager().getByName(buf.readString());
+        if (videoService == null) return null;
+        id = buf.readString();
+        title = buf.readString();
+        poster = buf.readString();
+        thumbnailUrl = buf.readString();
+        durationSeconds = buf.readLong();
+        return this;
+    }
+
+    @Override
+    public void toBytes(PacketByteBuf buf) {
+        buf.writeString(videoService.getName());
+        buf.writeString(id);
+        buf.writeString(title);
+        buf.writeString(poster);
+        buf.writeString(thumbnailUrl);
+        buf.writeLong(durationSeconds);
     }
 
 }

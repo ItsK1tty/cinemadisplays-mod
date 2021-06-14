@@ -17,7 +17,11 @@
 
 package com.ruinscraft.cinemadisplays.service;
 
-public class VideoService {
+import com.ruinscraft.cinemadisplays.buffer.PacketByteBufSerializable;
+import net.minecraft.network.PacketByteBuf;
+import org.apache.commons.lang3.NotImplementedException;
+
+public class VideoService implements PacketByteBufSerializable<VideoService> {
 
     private String name;
     private String url;
@@ -31,6 +35,10 @@ public class VideoService {
         this.setVolumeJs = setVolumeJs;
         this.startJs = startJs;
         this.seekJs = seekJs;
+    }
+
+    public VideoService() {
+
     }
 
     public String getName() {
@@ -51,6 +59,21 @@ public class VideoService {
 
     public String getSeekJs() {
         return seekJs;
+    }
+
+    @Override
+    public VideoService fromBytes(PacketByteBuf buf) {
+        name = buf.readString();
+        url = buf.readString();
+        setVolumeJs = buf.readString();
+        startJs = buf.readString();
+        seekJs = buf.readString();
+        return this;
+    }
+
+    @Override
+    public void toBytes(PacketByteBuf buf) {
+        throw new NotImplementedException("Not implemented on client");
     }
 
 }

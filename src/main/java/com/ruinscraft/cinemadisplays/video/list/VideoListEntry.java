@@ -17,19 +17,26 @@
 
 package com.ruinscraft.cinemadisplays.video.list;
 
+import com.ruinscraft.cinemadisplays.buffer.PacketByteBufSerializable;
 import com.ruinscraft.cinemadisplays.video.VideoInfo;
+import net.minecraft.network.PacketByteBuf;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
-public class VideoListEntry implements Comparable<VideoListEntry> {
+public class VideoListEntry implements Comparable<VideoListEntry>, PacketByteBufSerializable<VideoListEntry> {
 
-    private final VideoInfo videoInfo;
-    private final long lastRequested;
-    private final int timesRequested;
+    private VideoInfo videoInfo;
+    private long lastRequested;
+    private int timesRequested;
 
     public VideoListEntry(VideoInfo videoInfo, long lastRequested, int timesRequested) {
         this.videoInfo = videoInfo;
         this.lastRequested = lastRequested;
         this.timesRequested = timesRequested;
+    }
+
+    public VideoListEntry() {
+
     }
 
     public VideoInfo getVideoInfo() {
@@ -53,6 +60,19 @@ public class VideoListEntry implements Comparable<VideoListEntry> {
         } else {
             return -1;
         }
+    }
+
+    @Override
+    public VideoListEntry fromBytes(PacketByteBuf buf) {
+        videoInfo = new VideoInfo().fromBytes(buf);
+        lastRequested = buf.readLong();
+        timesRequested = buf.readInt();
+        return this;
+    }
+
+    @Override
+    public void toBytes(PacketByteBuf buf) {
+        throw new NotImplementedException("Not implemented on client");
     }
 
 }

@@ -17,7 +17,7 @@
 
 package com.ruinscraft.cinemadisplays.gui.widget;
 
-import com.ruinscraft.cinemadisplays.NetworkUtil;
+import com.ruinscraft.cinemadisplays.util.NetworkUtil;
 import com.ruinscraft.cinemadisplays.video.list.VideoListEntry;
 import net.minecraft.client.MinecraftClient;
 

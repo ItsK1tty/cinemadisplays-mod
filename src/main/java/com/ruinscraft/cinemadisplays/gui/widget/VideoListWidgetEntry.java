@@ -18,7 +18,8 @@
 package com.ruinscraft.cinemadisplays.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.ruinscraft.cinemadisplays.NetworkUtil;
+import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
+import com.ruinscraft.cinemadisplays.util.NetworkUtil;
 import com.ruinscraft.cinemadisplays.video.list.VideoListEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
@@ -36,10 +37,10 @@ import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlay
 
 public abstract class VideoListWidgetEntry extends ElementListWidget.Entry<VideoListWidgetEntry> implements Comparable<VideoListWidgetEntry> {
 
-    private static final Identifier PLAY_TEXTURE = new Identifier("cinemadisplays", "textures/gui/play.png");
-    private static final Identifier PLAY_SELECTED_TEXTURE = new Identifier("cinemadisplays", "textures/gui/play_selected.png");
-    private static final Identifier TRASH_TEXTURE = new Identifier("cinemadisplays", "textures/gui/trash.png");
-    private static final Identifier TRASH_SELECTED_TEXTURE = new Identifier("cinemadisplays", "textures/gui/trash_selected.png");
+    private static final Identifier PLAY_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/play.png");
+    private static final Identifier PLAY_SELECTED_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/play_selected.png");
+    private static final Identifier TRASH_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/trash.png");
+    private static final Identifier TRASH_SELECTED_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/trash_selected.png");
 
     private final VideoListWidget parent;
     private final VideoListEntry video;

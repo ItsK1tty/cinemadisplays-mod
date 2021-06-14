@@ -17,31 +17,32 @@
 
 package com.ruinscraft.cinemadisplays.screen;
 
-import com.ruinscraft.cinemadisplays.ImageUtil;
 import com.ruinscraft.cinemadisplays.block.PreviewScreenBlock;
+import com.ruinscraft.cinemadisplays.buffer.PacketByteBufSerializable;
+import com.ruinscraft.cinemadisplays.util.ImageUtil;
 import com.ruinscraft.cinemadisplays.video.VideoInfo;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
-public class PreviewScreen {
+public class PreviewScreen implements PacketByteBufSerializable<PreviewScreen> {
 
-    private final String world;
-    private final int x;
-    private final int y;
-    private final int z;
-    private final String facing;
-    private final String staticTextureUrl;
-    private final String activeTextureUrl;
+    private int x;
+    private int y;
+    private int z;
+    private String facing;
+    private String staticTextureUrl;
+    private String activeTextureUrl;
 
     @Nullable
     private VideoInfo videoInfo;
 
-    private final transient BlockPos blockPos; // used as a cache for performance
+    private transient BlockPos blockPos; // used as a cache for performance
     private transient boolean unregistered;
 
     @Nullable
@@ -51,23 +52,17 @@ public class PreviewScreen {
     @Nullable
     private transient NativeImageBackedTexture thumbnailTexture;
 
-    public PreviewScreen(String world, int x, int y, int z, String facing, String staticTextureUrl, String activeTextureUrl) {
-        this.world = world;
+    public PreviewScreen(int x, int y, int z, String facing, String staticTextureUrl, String activeTextureUrl) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.facing = facing;
         this.staticTextureUrl = staticTextureUrl;
         this.activeTextureUrl = activeTextureUrl;
-
-        ImageUtil.fetchImageTextureFromUrl(staticTextureUrl).thenAccept(texture -> staticTexture = texture);
-        ImageUtil.fetchImageTextureFromUrl(activeTextureUrl).thenAccept(texture -> activeTexture = texture);
-
-        blockPos = new BlockPos(new Vec3d(x, y, z));
     }
 
-    public String getWorld() {
-        return world;
+    public PreviewScreen() {
+
     }
 
     public int getX() {
@@ -103,28 +98,39 @@ public class PreviewScreen {
         return videoInfo != null;
     }
 
-    public void setVideoInfo(VideoInfo videoInfo) {
+    public void setVideoInfo(@Nullable VideoInfo videoInfo) {
         this.videoInfo = videoInfo;
 
         if (videoInfo == null || videoInfo.getThumbnailUrl() == null) {
             setThumbnailTexture(null);
         } else {
-            // Update thumbnail texture
             ImageUtil.fetchImageTextureFromUrl(videoInfo.getThumbnailUrl()).thenAccept(this::setThumbnailTexture);
         }
     }
 
     public BlockPos getBlockPos() {
+        if (blockPos == null) {
+            blockPos = new BlockPos(x, y, z);
+        }
+
         return blockPos;
     }
 
     @Nullable
     public NativeImageBackedTexture getStaticTexture() {
+        if (staticTexture == null && staticTextureUrl != null) {
+            ImageUtil.fetchImageTextureFromUrl(staticTextureUrl).thenAccept(texture -> staticTexture = texture);
+        }
+
         return staticTexture;
     }
 
     @Nullable
     public NativeImageBackedTexture getActiveTexture() {
+        if (activeTexture == null && activeTextureUrl != null) {
+            ImageUtil.fetchImageTextureFromUrl(activeTextureUrl).thenAccept(texture -> activeTexture = texture);
+        }
+
         return activeTexture;
     }
 
@@ -174,6 +180,22 @@ public class PreviewScreen {
         if (MinecraftClient.getInstance().world != null) {
             MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());
         }
+    }
+
+    @Override
+    public PreviewScreen fromBytes(PacketByteBuf buf) {
+        x = buf.readInt();
+        y = buf.readInt();
+        z = buf.readInt();
+        facing = buf.readString();
+        staticTextureUrl = buf.readString();
+        activeTextureUrl = buf.readString();
+        return this;
+    }
+
+    @Override
+    public void toBytes(PacketByteBuf buf) {
+        throw new NotImplementedException("Not implemented on client");
     }
 
 }

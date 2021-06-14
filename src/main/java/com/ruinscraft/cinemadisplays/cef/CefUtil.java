@@ -83,9 +83,9 @@ public final class CefUtil {
 
         // Adjust screen size
         {
-            int widthBlocks = screen.getWidth();
-            int heightBlocks = screen.getHeight();
-            double scale = (double) widthBlocks / (double) heightBlocks;
+            float widthBlocks = screen.getWidth();
+            float heightBlocks = screen.getHeight();
+            float scale = widthBlocks / heightBlocks;
             int height = 720;
             int width = (int) Math.floor(height * scale);
             browser.resize(width, height);

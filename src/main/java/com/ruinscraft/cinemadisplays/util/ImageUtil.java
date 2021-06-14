@@ -15,7 +15,7 @@
  * email: andersond@ruinscraft.com
  */
 
-package com.ruinscraft.cinemadisplays;
+package com.ruinscraft.cinemadisplays.util;
 
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;

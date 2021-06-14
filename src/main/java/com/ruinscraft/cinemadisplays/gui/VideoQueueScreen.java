@@ -18,6 +18,7 @@
 package com.ruinscraft.cinemadisplays.gui;
 
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
+import com.ruinscraft.cinemadisplays.gui.widget.VideoQueueWidget;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,8 +29,15 @@ public class VideoQueueScreen extends Screen {
 
     protected static final Identifier TEXTURE = new Identifier("textures/gui/social_interactions.png");
 
+    public VideoQueueWidget videoQueueWidget;
+
     public VideoQueueScreen() {
         super(Text.of("Video Queue"));
+    }
+
+    @Override
+    protected void init() {
+        videoQueueWidget = new VideoQueueWidget(client, this.width, this.height, 68, this.method_31361(), 19);
     }
 
     public void renderBackground(MatrixStack matrices) {
@@ -49,6 +57,7 @@ public class VideoQueueScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
+        videoQueueWidget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -66,6 +75,11 @@ public class VideoQueueScreen extends Screen {
 
     private int method_31362() {
         return (this.width - 238) / 2;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return super.mouseClicked(mouseX, mouseY, button) || videoQueueWidget.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override

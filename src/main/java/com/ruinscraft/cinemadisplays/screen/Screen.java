@@ -18,39 +18,39 @@
 package com.ruinscraft.cinemadisplays.screen;
 
 import com.ruinscraft.cinemadisplays.block.ScreenBlock;
+import com.ruinscraft.cinemadisplays.buffer.PacketByteBufSerializable;
 import com.ruinscraft.cinemadisplays.cef.CefUtil;
 import com.ruinscraft.cinemadisplays.video.Video;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.NotImplementedException;
 import org.cef.browser.CefBrowserOsr;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-public class Screen {
+public class Screen implements PacketByteBufSerializable<Screen> {
 
-    private final String world;
-    private final int x;
-    private final int y;
-    private final int z;
-    private final String facing;
-    private final int width;
-    private final int height;
-    private final boolean visible;
-    private final boolean muted;
-    private final UUID id;
-    private final List<PreviewScreen> previewScreens;
-    private final transient BlockPos blockPos; // used as a cache for performance
+    private int x;
+    private int y;
+    private int z;
+    private String facing;
+    private float width;
+    private float height;
+    private boolean visible;
+    private boolean muted;
+
+    private transient List<PreviewScreen> previewScreens;
     private transient CefBrowserOsr browser;
     private transient Video video;
     private transient boolean unregistered;
+    private transient BlockPos blockPos; // used as a cache for performance
 
-    public Screen(String world, int x, int y, int z, String facing, int width, int height, boolean visible, boolean muted, UUID id) {
-        this.world = world;
+    public Screen(int x, int y, int z, String facing, int width, int height, boolean visible, boolean muted) {
+        this();
         this.x = x;
         this.y = y;
         this.z = z;
@@ -59,13 +59,10 @@ public class Screen {
         this.height = height;
         this.visible = visible;
         this.muted = muted;
-        this.id = id;
-        previewScreens = new ArrayList<>();
-        blockPos = new BlockPos(new Vec3d(x, y, z));
     }
 
-    public String getWorld() {
-        return world;
+    public Screen() {
+        previewScreens = new ArrayList<>();
     }
 
     public int getX() {
@@ -80,15 +77,23 @@ public class Screen {
         return z;
     }
 
+    public BlockPos getPos() {
+        if (blockPos == null) {
+            blockPos = new BlockPos(x, y, z);
+        }
+
+        return blockPos;
+    }
+
     public String getFacing() {
         return facing;
     }
 
-    public int getWidth() {
+    public float getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return height;
     }
 
@@ -98,10 +103,6 @@ public class Screen {
 
     public boolean isMuted() {
         return muted;
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     public List<PreviewScreen> getPreviewScreens() {
@@ -222,6 +223,24 @@ public class Screen {
         if (MinecraftClient.getInstance().world != null) {
             MinecraftClient.getInstance().world.setBlockState(getBlockPos(), Blocks.AIR.getDefaultState());
         }
+    }
+
+    @Override
+    public Screen fromBytes(PacketByteBuf buf) {
+        x = buf.readInt();
+        y = buf.readInt();
+        z = buf.readInt();
+        facing = buf.readString();
+        width = buf.readFloat();
+        height = buf.readFloat();
+        visible = buf.readBoolean();
+        muted = buf.readBoolean();
+        return this;
+    }
+
+    @Override
+    public void toBytes(PacketByteBuf buf) {
+        throw new NotImplementedException("Not implemented on client");
     }
 
 }

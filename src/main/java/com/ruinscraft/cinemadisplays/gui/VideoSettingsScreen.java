@@ -28,7 +28,7 @@ import net.minecraft.util.Identifier;
 
 public class VideoSettingsScreen extends Screen {
 
-    private static final Identifier TEXTURE = new Identifier("cinemadisplays", "textures/gui/gui_generic_small.png");
+    private static final Identifier TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/gui_generic_small.png");
 
     private int left;
     private int top;
@@ -38,7 +38,7 @@ public class VideoSettingsScreen extends Screen {
     public VideoSettingsScreen() {
         super(Text.of("Video Settings"));
         this.x = 248;
-        this.y = 226/2;
+        this.y = 226 / 2;
     }
 
     @Override
