@@ -22,6 +22,7 @@ import com.ruinscraft.cinemadisplays.gui.widget.VideoQueueWidget;
 import com.ruinscraft.cinemadisplays.util.NetworkUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -39,6 +40,9 @@ public class VideoQueueScreen extends Screen {
     @Override
     protected void init() {
         videoQueueWidget = new VideoQueueWidget(this, client, this.width, this.height, 68, this.method_31361(), 19);
+        addButton(new ButtonWidget(method_31362() + 23, method_31359() + 78, 196, 20, Text.of("Video Settings"), button -> {
+            client.openScreen(new VideoSettingsScreen());
+        }));
     }
 
     private int method_31359() {
