@@ -37,15 +37,21 @@ public class VideoSettings {
 
     private float volume;
     private boolean muteWhenAltTabbed;
+    private boolean hideCrosshair;
+    private int browserResolution;
 
-    public VideoSettings(float volume, boolean muteWhenAltTabbed) {
+    public VideoSettings(float volume, boolean muteWhenAltTabbed, boolean hideCrosshair, int browserResolution) {
         this.volume = volume;
         this.muteWhenAltTabbed = muteWhenAltTabbed;
+        this.hideCrosshair = hideCrosshair;
+        this.browserResolution = browserResolution;
     }
 
     public VideoSettings() {
         volume = 1.0f;
         muteWhenAltTabbed = true;
+        hideCrosshair = true;
+        browserResolution = 720;
     }
 
     public float getVolume() {
@@ -62,6 +68,32 @@ public class VideoSettings {
 
     public void setMuteWhenAltTabbed(boolean muteWhenAltTabbed) {
         this.muteWhenAltTabbed = muteWhenAltTabbed;
+    }
+
+    public boolean isHideCrosshair() {
+        return hideCrosshair;
+    }
+
+    public void setHideCrosshair(boolean hideCrosshair) {
+        this.hideCrosshair = hideCrosshair;
+    }
+
+    public int getBrowserResolution() {
+        return browserResolution;
+    }
+
+    public void setNextBrowserResolution() {
+        if (browserResolution <= 240) {
+            browserResolution = 360;
+        } else if (browserResolution <= 360) {
+            browserResolution = 480;
+        } else if (browserResolution <= 480) {
+            browserResolution = 720;
+        } else if (browserResolution <= 720) {
+            browserResolution = 1080;
+        } else if (browserResolution >= 1080) {
+            browserResolution = 240;
+        }
     }
 
     public void saveAsync() {
@@ -86,6 +118,8 @@ public class VideoSettings {
         Properties properties = new Properties();
         properties.setProperty("volume", String.valueOf(volume));
         properties.setProperty("mute-while-alt-tabbed", String.valueOf(muteWhenAltTabbed));
+        properties.setProperty("hide-crosshair-while-screen-loaded", String.valueOf(hideCrosshair));
+        properties.setProperty("browser-resolution", String.valueOf(browserResolution));
 
         try (FileOutputStream output = new FileOutputStream(file)) {
             properties.store(output, null);
@@ -108,6 +142,8 @@ public class VideoSettings {
         try {
             volume = Float.parseFloat(properties.getProperty("volume"));
             muteWhenAltTabbed = properties.getProperty("mute-while-alt-tabbed").equalsIgnoreCase("true");
+            hideCrosshair = properties.getProperty("hide-crosshair-while-screen-loaded").equalsIgnoreCase("true");
+            browserResolution = Integer.parseInt(properties.getProperty("browser-resolution"));
         } catch (Exception e) {
             file.delete();
             save();

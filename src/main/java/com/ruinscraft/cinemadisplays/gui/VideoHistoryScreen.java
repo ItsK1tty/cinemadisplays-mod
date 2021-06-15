@@ -77,11 +77,8 @@ public class VideoHistoryScreen extends Screen {
         this.client.getTextureManager().bindTexture(TEXTURE);
         this.drawTexture(matrices, i, 64, 1, 1, 236, 8);
         int j = this.method_31360();
-
-        for (int k = 0; k < j; ++k) {
+        for (int k = 0; k < j; ++k)
             this.drawTexture(matrices, i, 72 + 16 * k, 1, 10, 236, 16);
-        }
-
         this.drawTexture(matrices, i, 72 + 16 * j, 1, 27, 236, 8);
         this.drawTexture(matrices, i + 10, 76, 243, 1, 12, 12);
     }
@@ -134,7 +131,7 @@ public class VideoHistoryScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!this.searchBox.isFocused() && this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
-            this.client.openScreen(null);
+            onClose();
             return true;
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);

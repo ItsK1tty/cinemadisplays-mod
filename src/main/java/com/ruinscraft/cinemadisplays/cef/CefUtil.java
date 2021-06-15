@@ -86,7 +86,7 @@ public final class CefUtil {
             float widthBlocks = screen.getWidth();
             float heightBlocks = screen.getHeight();
             float scale = widthBlocks / heightBlocks;
-            int height = 720;
+            int height = CinemaDisplaysMod.getInstance().getVideoSettings().getBrowserResolution();
             int width = (int) Math.floor(height * scale);
             browser.resize(width, height);
         }

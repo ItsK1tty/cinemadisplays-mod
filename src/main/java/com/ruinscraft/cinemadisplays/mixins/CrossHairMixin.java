@@ -30,7 +30,8 @@ public class CrossHairMixin {
 
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
     public void renderCrosshair(MatrixStack matrices, CallbackInfo ci) {
-        if (CinemaDisplaysMod.getInstance().getScreenManager().hasActiveScreen()) {
+        if (CinemaDisplaysMod.getInstance().getScreenManager().hasActiveScreen()
+                && CinemaDisplaysMod.getInstance().getVideoSettings().isHideCrosshair()) {
             ci.cancel();
         }
     }

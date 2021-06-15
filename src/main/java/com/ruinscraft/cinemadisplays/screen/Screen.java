@@ -121,6 +121,12 @@ public class Screen implements PacketByteBufSerializable<Screen> {
         return browser != null;
     }
 
+    public void reload() {
+        if (video != null) {
+            loadVideo(video);
+        }
+    }
+
     public void loadVideo(Video video) {
         this.video = video;
         closeBrowser();
