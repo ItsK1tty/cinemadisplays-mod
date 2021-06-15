@@ -44,6 +44,8 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
     private static final Identifier DOWNVOTE_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/downvote.png");
     private static final Identifier DOWNVOTE_SELECTED_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/downvote_selected.png");
     private static final Identifier DOWNVOTE_ACTIVE_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/downvote_active.png");
+    private static final Identifier TRASH_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/trash.png");
+    private static final Identifier TRASH_SELECTED_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/trash_selected.png");
 
     private final VideoQueueScreen parent;
     private final QueuedVideo queuedVideo;
@@ -51,6 +53,7 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
     protected MinecraftClient client;
     private boolean downVoteButtonSelected;
     private boolean upVoteButtonSelected;
+    private boolean trashButtonSelected;
 
     public VideoQueueWidgetEntry(VideoQueueScreen parent, QueuedVideo queuedVideo, MinecraftClient client) {
         this.parent = parent;
@@ -76,6 +79,7 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
         client.textRenderer.draw(matrices, queuedVideo.getScoreString(), (float) i + 165, (float) m, WHITE_COLOR);
         renderDownVoteButton(matrices, mouseX, mouseY, i, j);
         renderUpVoteButton(matrices, mouseX, mouseY, i, j);
+        renderTrashButton(matrices, mouseX, mouseY, i, j);
         if (mouseX > i && mouseX < i + 180 && mouseY > j && mouseY < j + 18) {
             parent.renderTooltip(matrices, Text.of(queuedVideo.getVideoInfo().getTitle()), mouseX, mouseY);
         }
@@ -85,11 +89,7 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
         int downVoteButtonPosX = i + 185;
         int downVoteButtonPosY = j + 7;
 
-        if (mouseX > downVoteButtonPosX && mouseX < downVoteButtonPosX + 12 && mouseY > downVoteButtonPosY && mouseY < downVoteButtonPosY + 12) {
-            downVoteButtonSelected = true;
-        } else {
-            downVoteButtonSelected = false;
-        }
+        downVoteButtonSelected = mouseX > downVoteButtonPosX && mouseX < downVoteButtonPosX + 12 && mouseY > downVoteButtonPosY && mouseY < downVoteButtonPosY + 12;
 
         if (queuedVideo.getClientState() == -1) {
             client.getTextureManager().bindTexture(DOWNVOTE_ACTIVE_TEXTURE);
@@ -106,11 +106,7 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
         int upVoteButtonPosX = i + 200;
         int upVoteButtonPosY = j + 3;
 
-        if (mouseX > upVoteButtonPosX && mouseX < upVoteButtonPosX + 12 && mouseY > upVoteButtonPosY && mouseY < upVoteButtonPosY + 12) {
-            upVoteButtonSelected = true;
-        } else {
-            upVoteButtonSelected = false;
-        }
+        upVoteButtonSelected = mouseX > upVoteButtonPosX && mouseX < upVoteButtonPosX + 12 && mouseY > upVoteButtonPosY && mouseY < upVoteButtonPosY + 12;
 
         if (queuedVideo.getClientState() == 1) {
             client.getTextureManager().bindTexture(UPVOTE_ACTIVE_TEXTURE);
@@ -123,11 +119,30 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
         drawTexture(matrices, upVoteButtonPosX, upVoteButtonPosY, 12, 12, 32F, 32F, 8, 8, 8, 8);
     }
 
+    private void renderTrashButton(MatrixStack matrices, int mouseX, int mouseY, int i, int j) {
+        if (queuedVideo.isOwner()) {
+            int trashButtonPosX = i + 225;
+            int trashButtonPosY = j + 5;
+
+            trashButtonSelected = mouseX > trashButtonPosX && mouseX < trashButtonPosX + 12 && mouseY > trashButtonPosY && mouseY < trashButtonPosY + 12;
+
+            if (trashButtonSelected) {
+                client.getTextureManager().bindTexture(TRASH_SELECTED_TEXTURE);
+            } else {
+                client.getTextureManager().bindTexture(TRASH_TEXTURE);
+            }
+
+            drawTexture(matrices, trashButtonPosX, trashButtonPosY, 12, 12, 32F, 32F, 8, 8, 8, 8);
+        }
+    }
+
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (downVoteButtonSelected) {
             NetworkUtil.sendVideoQueueVotePacket(queuedVideo.getVideoInfo(), -1);
         } else if (upVoteButtonSelected) {
             NetworkUtil.sendVideoQueueVotePacket(queuedVideo.getVideoInfo(), 1);
+        } else if (trashButtonSelected) {
+            NetworkUtil.sendVideoQueueRemovePacket(queuedVideo.getVideoInfo());
         }
 
         return true;

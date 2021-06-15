@@ -86,11 +86,7 @@ public abstract class VideoListWidgetEntry extends ElementListWidget.Entry<Video
         int reqButtonPosX = i + 185;
         int reqButtonY = j + 5;
 
-        if (mouseX > reqButtonPosX && mouseX < reqButtonPosX + 12 && mouseY > reqButtonY && mouseY < reqButtonY + 12) {
-            requestButtonSelected = true;
-        } else {
-            requestButtonSelected = false;
-        }
+        requestButtonSelected = mouseX > reqButtonPosX && mouseX < reqButtonPosX + 12 && mouseY > reqButtonY && mouseY < reqButtonY + 12;
 
         if (requestButtonSelected) {
             client.getTextureManager().bindTexture(PLAY_SELECTED_TEXTURE);
@@ -105,11 +101,7 @@ public abstract class VideoListWidgetEntry extends ElementListWidget.Entry<Video
         int trashButtonPosX = i + 200;
         int trashButtonY = j + 5;
 
-        if (mouseX > trashButtonPosX && mouseX < trashButtonPosX + 12 && mouseY > trashButtonY && mouseY < trashButtonY + 12) {
-            trashButtonSelected = true;
-        } else {
-            trashButtonSelected = false;
-        }
+        trashButtonSelected = mouseX > trashButtonPosX && mouseX < trashButtonPosX + 12 && mouseY > trashButtonY && mouseY < trashButtonY + 12;
 
         if (trashButtonSelected) {
             client.getTextureManager().bindTexture(TRASH_SELECTED_TEXTURE);

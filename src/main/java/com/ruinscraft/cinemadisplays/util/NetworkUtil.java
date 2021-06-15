@@ -58,6 +58,7 @@ public final class NetworkUtil {
     private static final Identifier CHANNEL_VIDEO_HISTORY_REMOVE = new Identifier(CinemaDisplaysMod.MODID, "video_history_remove");
     private static final Identifier CHANNEL_VIDEO_QUEUE_VOTE = new Identifier(CinemaDisplaysMod.MODID, "video_queue_vote");
     private static final Identifier CHANNEL_VIDEO_QUEUE_REMOVE = new Identifier(CinemaDisplaysMod.MODID, "video_queue_remove");
+    private static final Identifier CHANNEL_SHOW_VIDEO_TIMELINE = new Identifier(CinemaDisplaysMod.MODID, "show_video_timeline");
 
     public static void registerReceivers() {
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL_SERVICES, (client, handler, buf, responseSender) -> {
@@ -137,6 +138,17 @@ public final class NetworkUtil {
         videoInfo.toBytes(buf);
         buf.writeInt(voteType);
         ClientPlayNetworking.send(CHANNEL_VIDEO_QUEUE_VOTE, buf);
+    }
+
+    public static void sendVideoQueueRemovePacket(VideoInfo videoInfo) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        videoInfo.toBytes(buf);
+        ClientPlayNetworking.send(CHANNEL_VIDEO_QUEUE_REMOVE, buf);
+    }
+
+    public static void sendShowVideoTimelinePacket() {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        ClientPlayNetworking.send(CHANNEL_SHOW_VIDEO_TIMELINE, buf);
     }
 
 }

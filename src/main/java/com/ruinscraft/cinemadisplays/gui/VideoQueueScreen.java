@@ -19,6 +19,7 @@ package com.ruinscraft.cinemadisplays.gui;
 
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.gui.widget.VideoQueueWidget;
+import com.ruinscraft.cinemadisplays.util.NetworkUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -80,6 +81,12 @@ public class VideoQueueScreen extends Screen {
         this.renderBackground(matrices);
         videoQueueWidget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        NetworkUtil.sendShowVideoTimelinePacket();
     }
 
     @Override
