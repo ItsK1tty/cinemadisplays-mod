@@ -19,17 +19,23 @@ package com.ruinscraft.cinemadisplays.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
+import com.ruinscraft.cinemadisplays.gui.VideoQueueScreen;
+import com.ruinscraft.cinemadisplays.video.queue.QueuedVideo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.util.math.MatrixStack;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class VideoQueueWidget extends ElementListWidget<VideoQueueWidgetEntry> {
 
-    public VideoQueueWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+    private VideoQueueScreen parent;
+
+    public VideoQueueWidget(VideoQueueScreen parent, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         super(client, width, height, top, bottom, itemHeight);
+        this.parent = parent;
         this.method_31322(false); // Disables dirt texture
         this.method_31323(false); // Disables dirt texture
         update();
@@ -50,9 +56,12 @@ public class VideoQueueWidget extends ElementListWidget<VideoQueueWidgetEntry> {
     }
 
     public void update() {
-        List<VideoQueueWidgetEntry> entries = CinemaDisplaysMod.getInstance().getVideoQueue().getVideos().stream()
-                .map(entry -> new VideoQueueWidgetEntry(entry, client))
-                .collect(Collectors.toList());
+        List<VideoQueueWidgetEntry> entries = new ArrayList<>();
+        List<QueuedVideo> queuedVideos = CinemaDisplaysMod.getInstance().getVideoQueue().getVideos();
+        Collections.sort(queuedVideos);
+        for (int i = 0; i < queuedVideos.size(); i++) {
+            entries.add(new VideoQueueWidgetEntry(parent, queuedVideos.get(i), client));
+        }
         replaceEntries(entries);
     }
 

@@ -21,6 +21,7 @@ import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
 import com.ruinscraft.cinemadisplays.buffer.PacketByteBufSerializable;
 import com.ruinscraft.cinemadisplays.service.VideoService;
 import net.minecraft.network.PacketByteBuf;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -60,8 +61,8 @@ public class VideoInfo implements PacketByteBufSerializable<VideoInfo> {
     }
 
     public String getTitleShort() {
-        if (title.length() > 30) {
-            return title.substring(0, 27) + "...";
+        if (title.length() > 23) {
+            return title.substring(0, 20) + "...";
         } else {
             return title;
         }
@@ -89,6 +90,26 @@ public class VideoInfo implements PacketByteBufSerializable<VideoInfo> {
 
     public void setDurationSeconds(long durationSeconds) {
         this.durationSeconds = durationSeconds;
+    }
+
+    public String getDurationString() {
+        long totalDurationMillis = durationSeconds * 1000;
+        String totalDurationFormatted = DurationFormatUtils.formatDuration(totalDurationMillis, "H:mm:ss");
+        totalDurationFormatted = reduceFormattedDuration(totalDurationFormatted);
+        return totalDurationFormatted;
+    }
+
+    private static String reduceFormattedDuration(String formatted) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] split = formatted.split(":");
+
+        // If does not have hours
+        if (!split[0].equals("0")) {
+            return formatted;
+        } else {
+            stringBuilder.append(split[1]).append(":").append(split[2]);
+            return stringBuilder.toString();
+        }
     }
 
     public boolean isLivestream() {

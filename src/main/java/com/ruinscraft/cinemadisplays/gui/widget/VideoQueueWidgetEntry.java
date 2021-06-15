@@ -19,22 +19,24 @@ package com.ruinscraft.cinemadisplays.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import com.ruinscraft.cinemadisplays.CinemaDisplaysMod;
+import com.ruinscraft.cinemadisplays.gui.VideoQueueScreen;
 import com.ruinscraft.cinemadisplays.util.NetworkUtil;
 import com.ruinscraft.cinemadisplays.video.queue.QueuedVideo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import static net.minecraft.client.gui.DrawableHelper.drawTexture;
 import static net.minecraft.client.gui.DrawableHelper.fill;
-import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.GRAY_COLOR;
-import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.WHITE_COLOR;
+import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.*;
 
-public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWidgetEntry> {
+public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWidgetEntry> implements Comparable<VideoQueueWidgetEntry> {
 
     private static final Identifier UPVOTE_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/upvote.png");
     private static final Identifier UPVOTE_SELECTED_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/upvote_selected.png");
@@ -43,13 +45,15 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
     private static final Identifier DOWNVOTE_SELECTED_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/downvote_selected.png");
     private static final Identifier DOWNVOTE_ACTIVE_TEXTURE = new Identifier(CinemaDisplaysMod.MODID, "textures/gui/downvote_active.png");
 
+    private final VideoQueueScreen parent;
     private final QueuedVideo queuedVideo;
     private final List<Element> children;
     protected MinecraftClient client;
     private boolean downVoteButtonSelected;
     private boolean upVoteButtonSelected;
 
-    public VideoQueueWidgetEntry(QueuedVideo queuedVideo, MinecraftClient client) {
+    public VideoQueueWidgetEntry(VideoQueueScreen parent, QueuedVideo queuedVideo, MinecraftClient client) {
+        this.parent = parent;
         this.queuedVideo = queuedVideo;
         children = ImmutableList.of();
         this.client = client;
@@ -65,11 +69,16 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
         int i = x + 4;
         int j = y + (entryHeight - 24) / 2;
         int m = y + (entryHeight - 7) / 2;
-        fill(matrices, x, y, x + entryWidth, y + entryHeight, GRAY_COLOR);
+        int color = queuedVideo.isOwner() ? BLACK_COLOR : GRAY_COLOR;
+        fill(matrices, x, y, x + entryWidth, y + entryHeight, color);
         client.textRenderer.draw(matrices, queuedVideo.getVideoInfo().getTitleShort(), (float) i, (float) m, WHITE_COLOR);
-        client.textRenderer.draw(matrices, queuedVideo.getScoreString(), (float) i + 160, (float) m, WHITE_COLOR);
+        client.textRenderer.draw(matrices, queuedVideo.getVideoInfo().getDurationString(), (float) i + 118, (float) m, WHITE_COLOR);
+        client.textRenderer.draw(matrices, queuedVideo.getScoreString(), (float) i + 165, (float) m, WHITE_COLOR);
         renderDownVoteButton(matrices, mouseX, mouseY, i, j);
         renderUpVoteButton(matrices, mouseX, mouseY, i, j);
+        if (mouseX > i && mouseX < i + 180 && mouseY > j && mouseY < j + 18) {
+            parent.renderTooltip(matrices, Text.of(queuedVideo.getVideoInfo().getTitle()), mouseX, mouseY);
+        }
     }
 
     private void renderDownVoteButton(MatrixStack matrices, int mouseX, int mouseY, int i, int j) {
@@ -122,6 +131,11 @@ public class VideoQueueWidgetEntry extends ElementListWidget.Entry<VideoQueueWid
         }
 
         return true;
+    }
+
+    @Override
+    public int compareTo(@NotNull VideoQueueWidgetEntry videoQueueWidgetEntry) {
+        return queuedVideo.compareTo(videoQueueWidgetEntry.queuedVideo);
     }
 
 }

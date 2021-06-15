@@ -25,11 +25,13 @@ public class QueuedVideo implements Comparable<QueuedVideo> {
     private final VideoInfo videoInfo;
     private final int score;
     private final int clientState; // -1 = downvote, 0 = no vote, 1 = upvote
+    private final boolean owner;
 
-    public QueuedVideo(VideoInfo videoInfo, int score, int clientState) {
+    public QueuedVideo(VideoInfo videoInfo, int score, int clientState, boolean owner) {
         this.videoInfo = videoInfo;
         this.score = score;
         this.clientState = clientState;
+        this.owner = owner;
     }
 
     public VideoInfo getVideoInfo() {
@@ -42,6 +44,10 @@ public class QueuedVideo implements Comparable<QueuedVideo> {
 
     public int getClientState() {
         return clientState;
+    }
+
+    public boolean isOwner() {
+        return owner;
     }
 
     public String getScoreString() {

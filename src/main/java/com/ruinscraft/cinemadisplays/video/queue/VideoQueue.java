@@ -41,15 +41,6 @@ public class VideoQueue implements PacketByteBufSerializable<VideoQueue> {
         videos.clear();
     }
 
-//    public void setVideos(List<QueuedVideo> videos) {
-//        this.videos = videos;
-//        // Semi hack, need to improve
-//        if (MinecraftClient.getInstance().currentScreen instanceof VideoQueueScreen) {
-//            VideoQueueScreen videoQueueScreen = (VideoQueueScreen) MinecraftClient.getInstance().currentScreen;
-//            videoQueueScreen.videoQueueWidget.update();
-//        }
-//    }
-
     @Override
     public VideoQueue fromBytes(PacketByteBuf buf) {
         List<QueuedVideo> videos = new ArrayList<>();
@@ -58,7 +49,8 @@ public class VideoQueue implements PacketByteBufSerializable<VideoQueue> {
             VideoInfo videoInfo = new VideoInfo().fromBytes(buf);
             int score = buf.readInt();
             int clientState = buf.readInt();
-            videos.add(new QueuedVideo(videoInfo, score, clientState));
+            boolean owner = buf.readBoolean();
+            videos.add(new QueuedVideo(videoInfo, score, clientState, owner));
         }
         this.videos = videos;
         return this;
