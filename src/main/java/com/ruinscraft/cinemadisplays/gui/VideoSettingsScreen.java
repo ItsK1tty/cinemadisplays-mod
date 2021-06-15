@@ -71,6 +71,8 @@ public class VideoSettingsScreen extends Screen {
             CinemaDisplaysMod.getInstance().getVideoSettings().setNextBrowserResolution();
             button.setMessage(Text.of("Screen resolution: " + CinemaDisplaysMod.getInstance().getVideoSettings().getBrowserResolution() + "p"));
             shouldReloadScreen = true;
+        }, (button, matrices, mouseX, mouseY) -> {
+            renderTooltip(matrices, Text.of("A higher resolution may decrease FPS"), mouseX, mouseY);
         }));
     }
 
