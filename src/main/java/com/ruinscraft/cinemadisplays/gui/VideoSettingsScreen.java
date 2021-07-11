@@ -37,7 +37,7 @@ public class VideoSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        addButton(new SliderWidget(method_31362() + 23, 78, 196, 20, Text.of("Volume"),
+        addDrawableChild(new SliderWidget(method_31362() + 23, 78, 196, 20, Text.of("Volume"),
                 CinemaDisplaysMod.getInstance().getVideoSettings().getVolume()) {
             @Override
             protected void updateMessage() {
@@ -50,7 +50,7 @@ public class VideoSettingsScreen extends Screen {
                 CinemaDisplaysMod.getInstance().getVideoSettings().setVolume((float) value);
             }
         });
-        addButton(new CheckboxWidget(method_31362() + 23, 110, 196, 20, Text.of("Mute video while alt-tabbed"),
+        addDrawableChild(new CheckboxWidget(method_31362() + 23, 110, 196, 20, Text.of("Mute video while alt-tabbed"),
                 CinemaDisplaysMod.getInstance().getVideoSettings().isMuteWhenAltTabbed()) {
             @Override
             public void onPress() {
@@ -58,7 +58,7 @@ public class VideoSettingsScreen extends Screen {
                 CinemaDisplaysMod.getInstance().getVideoSettings().setMuteWhenAltTabbed(isChecked());
             }
         });
-        addButton(new CheckboxWidget(method_31362() + 23, 142, 196, 20, Text.of("Hide crosshair while video playing"),
+        addDrawableChild(new CheckboxWidget(method_31362() + 23, 142, 196, 20, Text.of("Hide crosshair while video playing"),
                 CinemaDisplaysMod.getInstance().getVideoSettings().isHideCrosshair()) {
             @Override
             public void onPress() {
@@ -66,7 +66,7 @@ public class VideoSettingsScreen extends Screen {
                 CinemaDisplaysMod.getInstance().getVideoSettings().setHideCrosshair(isChecked());
             }
         });
-        addButton(new ButtonWidget(method_31362() + 23, 142 + 32, 196, 20,
+        addDrawableChild(new ButtonWidget(method_31362() + 23, 142 + 32, 196, 20,
                 Text.of("Screen resolution: " + CinemaDisplaysMod.getInstance().getVideoSettings().getBrowserResolution() + "p"), button -> {
             CinemaDisplaysMod.getInstance().getVideoSettings().setNextBrowserResolution();
             button.setMessage(Text.of("Screen resolution: " + CinemaDisplaysMod.getInstance().getVideoSettings().getBrowserResolution() + "p"));
