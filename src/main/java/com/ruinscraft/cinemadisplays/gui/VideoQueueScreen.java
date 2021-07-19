@@ -40,7 +40,7 @@ public class VideoQueueScreen extends Screen {
     @Override
     protected void init() {
         videoQueueWidget = new VideoQueueWidget(this, client, this.width, this.height, 68, this.method_31361(), 19);
-        addDrawableChild(new ButtonWidget(method_31362() + 23, method_31359() + 78, 196, 20, Text.of("Video Settings"), button -> {
+        addButton(new ButtonWidget(method_31362() + 23, method_31359() + 78, 196, 20, Text.of("Video Settings"), button -> {
             client.openScreen(new VideoSettingsScreen());
         }));
     }

@@ -37,8 +37,8 @@ public abstract class VideoListWidget extends ElementListWidget<VideoListWidgetE
     public VideoListWidget(VideoList videoList, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         super(client, width, height, top, bottom, itemHeight);
         this.videoList = videoList;
-        this.setRenderBackground(false);
-        this.setRenderHorizontalShadows(false);
+        this.method_31322(false); // Disables dirt texture
+        this.method_31323(false); // Disables dirt texture
         update();
     }
 
