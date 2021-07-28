@@ -17,12 +17,9 @@
 
 package com.ruinscraft.cinemadisplays.block;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -61,7 +58,6 @@ public class PreviewScreenBlock extends Block implements BlockEntityProvider {
         PREVIEW_SCREEN_BLOCK = new PreviewScreenBlock();
 
         Registry.register(Registry.BLOCK, IDENT, PREVIEW_SCREEN_BLOCK);
-        Registry.register(Registry.ITEM, new Identifier("cinemadisplays", "preview_screen"), new BlockItem(PREVIEW_SCREEN_BLOCK, new FabricItemSettings().group(ItemGroup.MISC)));
     }
 
 }

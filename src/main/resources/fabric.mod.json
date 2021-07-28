@@ -12,7 +12,6 @@
     "sources": "https://github.com/Ruinscraft/cinemadisplays-mod"
   },
   "license": "Cinema Displays Mod for Minecraft License",
-  "icon": "assets/cinemadisplays/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [

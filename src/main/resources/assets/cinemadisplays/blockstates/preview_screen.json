@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "cinemadisplays:block/preview_screen_block" }
+  }
+}
