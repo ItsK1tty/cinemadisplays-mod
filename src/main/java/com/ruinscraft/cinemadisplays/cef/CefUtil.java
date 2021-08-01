@@ -51,7 +51,7 @@ public final class CefUtil {
         cefSettings.background_color = cefSettings.new ColorType(0, 255, 255, 255);
         cefSettings.cache_path = new File("chromium", "cache").getAbsolutePath();
         cefSettings.ignore_certificate_errors = true;
-        cefSettings.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36";
+        cefSettings.user_agent = "Gmod"; // For use with some gmod cinema sites
 
         cefAppInstance = CefApp.getInstance(cefSwitches, cefSettings);
         cefClientInstance = cefAppInstance.createClient();
